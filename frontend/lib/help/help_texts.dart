@@ -67,9 +67,6 @@ Example: Ada completed the robot wiring independently, then helped two classmate
   static const mentorStoryArchive =
       'Browse stories previously selected as story of the month, including their course, author, date, and photo when available.';
 
-  static const mentorInvoice =
-      'Invoice submission is not available yet. Return to the mentor menu to use the existing features.';
-
   static const mentorCurriculum =
       'Choose a curriculum category and chapter to open its learning material. Use Reload if the chapter list fails to load.';
 

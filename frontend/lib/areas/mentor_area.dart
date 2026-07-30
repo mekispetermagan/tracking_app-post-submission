@@ -186,7 +186,6 @@ class _MentorAreaState extends State<MentorArea> {
         _trackStudentsController.view == TrackStudentsView.record
             ? HelpTexts.mentorStudentRecord
             : HelpTexts.mentorTrackStudents,
-      MentorScreen.submitInvoice => HelpTexts.mentorInvoice,
       MentorScreen.stories => HelpTexts.mentorStories,
       MentorScreen.submitStory => HelpTexts.mentorStoryForm,
       MentorScreen.storyWinnerArchive => HelpTexts.mentorStoryArchive,
@@ -296,12 +295,6 @@ class _MentorAreaState extends State<MentorArea> {
           MentorScreen.viewPhotos => _buildPhotoArea(),
 
           MentorScreen.trackStudents => _buildTrackStudentsArea(),
-
-          MentorScreen.submitInvoice => ComingSoonScreen(
-            title: 'Submit invoice',
-            onHome: _goHome,
-            onLogout: _logout,
-          ),
 
           MentorScreen.stories => _buildStoriesArea(),
 

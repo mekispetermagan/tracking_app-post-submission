@@ -250,12 +250,6 @@ class _AdminAreaState extends State<AdminArea> {
         AdminScreen.courseVisits => _buildCourseVisitsArea(),
 
         AdminScreen.courseVisitForm => _buildCourseVisitFormArea(),
-
-        AdminScreen.reportsData => ComingSoonScreen(
-          title: 'Reports & data',
-          onHome: _returnToMenu,
-          onLogout: widget.onLogout,
-        ),
       },
     );
   }

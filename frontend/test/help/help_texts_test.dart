@@ -24,12 +24,11 @@ void main() {
       HelpTexts.mentorStories,
       HelpTexts.mentorStoryForm,
       HelpTexts.mentorStoryArchive,
-      HelpTexts.mentorInvoice,
       HelpTexts.mentorCurriculum,
       HelpTexts.mentorCurriculumChapter,
     ];
 
-    expect(texts, hasLength(23));
+    expect(texts, hasLength(22));
     expect(texts.every((text) => text.trim().isNotEmpty), isTrue);
     expect(texts.every((text) => text.length < 700), isTrue);
     expect(texts.toSet(), hasLength(texts.length));

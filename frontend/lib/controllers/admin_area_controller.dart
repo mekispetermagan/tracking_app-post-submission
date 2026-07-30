@@ -13,7 +13,6 @@ enum AdminScreen {
   storyWinnerArchive,
   courseVisits,
   courseVisitForm,
-  reportsData,
 }
 
 class AdminAreaController extends AreaController<AdminScreen> {
@@ -34,7 +33,6 @@ class AdminAreaController extends AreaController<AdminScreen> {
     AreaMenuItem(screen: AdminScreen.viewPhotos, label: 'View photos'),
     AreaMenuItem(screen: AdminScreen.trackStudents, label: 'Track students'),
     AreaMenuItem(screen: AdminScreen.stories, label: 'Stories'),
-    AreaMenuItem(screen: AdminScreen.reportsData, label: 'Reports & data'),
     AreaMenuItem(screen: AdminScreen.courseVisits, label: 'Course visits'),
   ];
 
