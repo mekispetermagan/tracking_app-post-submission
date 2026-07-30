@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../config/curriculum_url_policy.dart';
 import '../models/models.dart';
+import '../widgets/app_bar.dart';
 
 class CurriculumScreen extends StatelessWidget {
   final List<CurriculumCategory> categories;
@@ -140,20 +141,71 @@ class CurriculumScreen extends StatelessWidget {
   }
 
   Widget _buildChapter(CurriculumChapter chapter) {
-    final url = selectedChapterUrl;
+    final uri = CurriculumUrlPolicy.trustedUri(selectedChapterUrl);
 
-    if (url == null) {
+    if (uri == null) {
       return const Center(child: Text('Invalid chapter URL.'));
     }
 
-    return _CurriculumChapterView(key: ValueKey(url), url: url);
+    if (kIsWeb) {
+      return _WebCurriculumChapterView(uri: uri);
+    }
+
+    return _CurriculumChapterView(key: ValueKey(uri), uri: uri);
+  }
+}
+
+class _WebCurriculumChapterView extends StatelessWidget {
+  final Uri uri;
+
+  const _WebCurriculumChapterView({required this.uri});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.open_in_new, size: 48),
+            const SizedBox(height: 16),
+            const Text(
+              'Curriculum chapters open in a separate browser tab.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () => _openChapter(context),
+              icon: const Icon(Icons.open_in_new),
+              label: const Text('Open curriculum chapter'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openChapter(BuildContext context) async {
+    final opened = await launchUrl(
+      uri,
+      mode: LaunchMode.platformDefault,
+      webOnlyWindowName: '_blank',
+    );
+    if (opened || !context.mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Could not open this chapter.')),
+      );
   }
 }
 
 class _CurriculumChapterView extends StatefulWidget {
-  final String url;
+  final Uri uri;
 
-  const _CurriculumChapterView({required this.url, super.key});
+  const _CurriculumChapterView({required this.uri, super.key});
 
   @override
   State<_CurriculumChapterView> createState() {
@@ -217,7 +269,7 @@ class _CurriculumChapterViewState extends State<_CurriculumChapterView> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(widget.url));
+      ..loadRequest(widget.uri);
   }
 
   Future<NavigationDecision> _handleNavigation(
@@ -229,9 +281,20 @@ class _CurriculumChapterViewState extends State<_CurriculumChapterView> {
       return NavigationDecision.prevent;
     }
 
-    if (uri.scheme == 'about' ||
-        uri.host == 'curriculum.afterschool-geekery.org') {
+    if (CurriculumUrlPolicy.isAboutBlank(uri) ||
+        CurriculumUrlPolicy.isTrusted(uri)) {
       return NavigationDecision.navigate;
+    }
+
+    if (!CurriculumUrlPolicy.isSafeExternal(uri)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('Blocked an unsafe link.')),
+          );
+      }
+      return NavigationDecision.prevent;
     }
 
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);

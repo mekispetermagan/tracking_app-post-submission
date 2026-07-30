@@ -1,3 +1,4 @@
+import '../config/api_config.dart';
 import '_model_utils.dart';
 
 class StoryPhoto {
@@ -14,7 +15,7 @@ class StoryPhoto {
   factory StoryPhoto.fromJson(Map<String, dynamic> json) {
     return StoryPhoto(
       id: json['id'] as int,
-      url: json['url'] as String,
+      url: ApiConfig.resolveApiUrl(json['url'] as String),
       uploadedAt: DateTime.parse(json['uploaded_at'] as String),
     );
   }

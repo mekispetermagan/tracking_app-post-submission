@@ -1,3 +1,5 @@
+import '../config/api_config.dart';
+
 class SessionPhoto {
   final int id;
   final int sessionLogId;
@@ -27,7 +29,7 @@ class SessionPhoto {
       mentorName: json['mentor_name'] as String,
       sessionDate: DateTime.parse(json['session_date'] as String),
       photoNumber: json['photo_number'] as int,
-      url: json['url'] as String,
+      url: ApiConfig.resolveApiUrl(json['url'] as String),
       uploadedAt: DateTime.parse(json['uploaded_at'] as String),
     );
   }
