@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../help/help_scope.dart';
 import 'buttons.dart';
+import 'privacy_support.dart';
 
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget title;
@@ -10,6 +11,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBack;
   final VoidCallback? onLogout;
   final String? helpText;
+  final bool showPrivacySupportAction;
   final List<Widget> actions;
 
   const AppTopBar({
@@ -19,6 +21,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBack = false,
     this.onLogout,
     this.helpText,
+    this.showPrivacySupportAction = false,
     this.actions = const [],
     super.key,
   }) : assert(
@@ -56,6 +59,12 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       actions: [
         ...actions,
+        if (showPrivacySupportAction)
+          AppBarIconButton(
+            onPressed: () => showPrivacySupport(context),
+            icon: Icons.info_outline,
+            tooltip: 'Privacy & support',
+          ),
         if (effectiveHelpText != null)
           AppBarIconButton(
             onPressed: () => _showHelp(context, effectiveHelpText),

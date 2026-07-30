@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:agu_frontend/screens/admin_login_screen.dart';
 import 'package:agu_frontend/screens/mentor_login_screen.dart';
 import 'package:agu_frontend/screens/start_screen.dart';
@@ -7,6 +8,16 @@ import 'package:agu_frontend/screens/start_screen.dart';
 Widget _app(Widget child) => MaterialApp(home: child);
 
 void main() {
+  setUpAll(() {
+    PackageInfo.setMockInitialValues(
+      appName: 'Afterschool Geekery Uganda',
+      packageName: 'org.afterschoolgeekery.agu',
+      version: '0.1.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
+  });
+
   testWidgets('start screen offers both access paths', (tester) async {
     var mentorLogins = 0;
     var adminLogins = 0;
@@ -20,6 +31,18 @@ void main() {
     );
 
     expect(find.bySemanticsLabel('Afterschool Geekery Uganda'), findsOneWidget);
+    expect(find.text('Privacy & support'), findsOneWidget);
+
+    await tester.tap(find.text('Privacy & support'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.text('Privacy policy'), findsOneWidget);
+    expect(find.text('Request account or data deletion'), findsOneWidget);
+    expect(find.text('Contact support'), findsOneWidget);
+    expect(find.text('Version 0.1.0 (1)'), findsOneWidget);
+    await tester.tap(find.text('Close'));
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text('Mentor login'));
     await tester.tap(find.text('Admin login'));
     expect((mentorLogins, adminLogins), (1, 1));

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/buttons.dart';
+import '../widgets/privacy_support.dart';
 
 class StartScreen extends StatelessWidget {
   final VoidCallback onAdminLogin;
@@ -54,6 +55,8 @@ class StartScreen extends StatelessWidget {
                           onPressed: onAdminLogin,
                           text: 'Admin login',
                         ),
+                        const SizedBox(height: 24),
+                        const PrivacySupportButton(),
                       ],
                     ),
                   ),

@@ -20,7 +20,11 @@ class AdminMenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTopBar(title: const Text('Admin menu'), onLogout: onLogout),
+      appBar: AppTopBar(
+        title: const Text('Admin menu'),
+        showPrivacySupportAction: true,
+        onLogout: onLogout,
+      ),
       body: SafeArea(
         child: ListView.separated(
           padding: const EdgeInsets.all(24),

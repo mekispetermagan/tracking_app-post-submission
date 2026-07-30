@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:agu_frontend/help/help_scope.dart';
 import 'package:agu_frontend/widgets/app_bar.dart';
 
 void main() {
+  setUpAll(() {
+    PackageInfo.setMockInitialValues(
+      appName: 'Afterschool Geekery Uganda',
+      packageName: 'org.afterschoolgeekery.agu',
+      version: '0.1.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
+  });
+
   testWidgets('uses branded title and icon buttons for Home and Logout roles', (
     tester,
   ) async {
@@ -38,6 +49,28 @@ void main() {
 
     expect(homePressed, isTrue);
     expect(logoutPressed, isTrue);
+  });
+
+  testWidgets('opens privacy and support from an app-bar action', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          appBar: AppTopBar(
+            title: Text('Area'),
+            showPrivacySupportAction: true,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('Privacy & support'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.text('Privacy policy'), findsOneWidget);
+    expect(find.text('Version 0.1.0 (1)'), findsOneWidget);
   });
 
   testWidgets('uses a back button for the Back role', (tester) async {

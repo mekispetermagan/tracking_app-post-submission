@@ -21,7 +21,11 @@ class MentorMenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTopBar(title: const Text('Mentor menu'), onLogout: onLogout),
+      appBar: AppTopBar(
+        title: const Text('Mentor menu'),
+        showPrivacySupportAction: true,
+        onLogout: onLogout,
+      ),
       body: SafeArea(
         child: ListView.separated(
           padding: const EdgeInsets.all(24),
