@@ -1,11 +1,12 @@
 {
-    "name": "frontend",
-    "short_name": "frontend",
+    "id": "/org.afterschoolgeekery.agu",
+    "name": "Afterschool Geekery Uganda",
+    "short_name": "AG Uganda",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Project management for Afterschool Geekery Uganda.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
