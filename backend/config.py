@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +12,7 @@ class Settings(BaseSettings):
     admin_token_minutes: int = 30
     temp_token_minutes: int = 10
     temporary_secret_days: int = 7
+    cors_origins: list[str] = Field(default_factory=list)
 
     model_config = SettingsConfigDict(env_file=".env")
 

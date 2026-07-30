@@ -21,6 +21,7 @@ backend/original_photos/
 backend/original_story_photos/
 backend/compressed_photos/
 backend/compressed_story_photos/
+backend/demo_photos/
 
 count_lines.sh
 agu-upload-key-backup.7z
