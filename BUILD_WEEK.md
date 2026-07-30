@@ -2,6 +2,17 @@
 
 This document separates work completed before OpenAI Build Week from work completed during the submission period. It also records how ChatGPT, Codex CLI, and GPT-5.6 contributed.
 
+## Public demonstration
+
+All names, phone numbers, and records in the public demonstration are fictional.
+
+Web app: <https://mekis.dev/tracking/>
+
+| Role | Phone | Credential |
+| --- | --- | --- |
+| Mentor | `0123456789` | PIN: `123456` |
+| Administrator | `0987654321` | Password: `Judge123` |
+
 ## Project background
 
 Afterschool Geekery Uganda Project Manager is an independently developed software project built to support an active coding and robotics program in Uganda.

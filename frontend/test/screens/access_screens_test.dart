@@ -20,6 +20,14 @@ void main() {
     );
 
     expect(find.bySemanticsLabel('Afterschool Geekery Uganda'), findsOneWidget);
+    await tester.tap(find.text("Build Week info"));
+    await tester.pumpAndSettle();
+    expect(find.text("Build Week demo"), findsOneWidget);
+    expect(find.textContaining("0123456789"), findsOneWidget);
+    expect(find.textContaining("0987654321"), findsOneWidget);
+    expect(find.textContaining("Judge123"), findsOneWidget);
+    await tester.tap(find.text("Close"));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Mentor login'));
     await tester.tap(find.text('Admin login'));
     expect((mentorLogins, adminLogins), (1, 1));
@@ -57,6 +65,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Try again'), findsOneWidget);
+    expect(find.text('Build Week info'), findsOneWidget);
     expect(clears, 1);
     await tester.enterText(find.byType(TextFormField), '0712345678');
     await tester.enterText(find.byType(TextField).last, 'secret');
@@ -98,6 +107,7 @@ void main() {
       );
       expect(login.onPressed, isNull);
       expect(find.byType(TextFormField), findsOneWidget);
+      expect(find.text('Build Week info'), findsOneWidget);
       expect(submits, 0);
     },
   );

@@ -49,6 +49,7 @@ class AdminLoginScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      floatingActionButton: const BuildWeekInfoButton(),
       appBar: AppTopBar(title: const Text('Admin login'), onBack: onCancel),
       body: SafeArea(
         child: ListView(
