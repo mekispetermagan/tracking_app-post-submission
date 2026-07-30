@@ -53,7 +53,6 @@ class MentorLoginScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      floatingActionButton: const BuildWeekInfoButton(),
       appBar: AppTopBar(
         title: const Text('Mentor login'),
         onBack: onCancel,

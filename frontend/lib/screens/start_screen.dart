@@ -15,7 +15,6 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: const BuildWeekInfoButton(),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
