@@ -77,6 +77,7 @@ void main() {
   const studentCreate = StudentCreateRequest(
     firstName: 'Ada',
     lastName: 'Lovelace',
+    birthYear: 2010,
     active: true,
     courseIds: [9],
   );
@@ -92,6 +93,7 @@ void main() {
   const mentorStudentCreate = MentorStudentCreateRequest(
     firstName: 'Grace',
     lastName: 'Hopper',
+    birthYear: 2011,
     courseIds: [9],
   );
   const mentorStudentUpdate = MentorStudentUpdateRequest(

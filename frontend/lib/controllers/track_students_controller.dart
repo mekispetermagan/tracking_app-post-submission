@@ -12,9 +12,11 @@ class TrackStudentsController extends FeatureController {
   TrackStudentsController({
     SharedStudentApi? studentApi,
     SharedStudentRecordApi? studentRecordApi,
+    SharedSkillSurveyApi? skillSurveyApi,
   }) : _studentApi = studentApi ?? SharedStudentApi(),
        recordController = StudentRecordController(
          studentRecordApi: studentRecordApi,
+         skillSurveyApi: skillSurveyApi,
        );
 
   final StudentRecordController recordController;

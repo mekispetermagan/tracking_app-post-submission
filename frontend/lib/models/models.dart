@@ -8,3 +8,4 @@ export 'student_record_models.dart';
 export 'story_models.dart';
 export 'curriculum_models.dart';
 export 'course_visit_models.dart';
+export 'skill_survey_models.dart';

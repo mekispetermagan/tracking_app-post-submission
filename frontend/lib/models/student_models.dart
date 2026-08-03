@@ -5,7 +5,7 @@ class Student {
   final String firstName;
   final String lastName;
   final int? originCountryId;
-  final int? birthYear;
+  final int birthYear;
   final String? gender;
   final bool active;
   final List<int> courseIds;
@@ -27,7 +27,7 @@ class Student {
       firstName: json['first_name'] as String,
       lastName: json['last_name'] as String,
       originCountryId: json['origin_country_id'] as int?,
-      birthYear: json['birth_year'] as int?,
+      birthYear: json['birth_year'] as int,
       gender: json['gender'] as String?,
       active: json['active'] as bool,
       courseIds: List<int>.from(json['course_ids'] as List),
@@ -41,7 +41,7 @@ class StudentCreateRequest {
   final String firstName;
   final String lastName;
   final int? originCountryId;
-  final int? birthYear;
+  final int birthYear;
   final String? gender;
   final bool active;
   final List<int> courseIds;
@@ -49,8 +49,8 @@ class StudentCreateRequest {
   const StudentCreateRequest({
     required this.firstName,
     required this.lastName,
+    required this.birthYear,
     this.originCountryId,
-    this.birthYear,
     this.gender,
     this.active = true,
     this.courseIds = const [],
@@ -73,7 +73,7 @@ class StudentUpdateRequest {
   final String firstName;
   final String lastName;
   final int? originCountryId;
-  final int? birthYear;
+  final int birthYear;
   final String? gender;
   final bool active;
   final List<int> courseIds;
@@ -117,7 +117,7 @@ class MentorStudentCreateRequest {
   final String firstName;
   final String lastName;
   final int? originCountryId;
-  final int? birthYear;
+  final int birthYear;
   final String? gender;
   final List<int> courseIds;
 
@@ -125,8 +125,8 @@ class MentorStudentCreateRequest {
     required this.firstName,
     required this.lastName,
     required this.courseIds,
+    required this.birthYear,
     this.originCountryId,
-    this.birthYear,
     this.gender,
   });
 
@@ -146,7 +146,7 @@ class MentorStudentUpdateRequest {
   final String firstName;
   final String lastName;
   final int? originCountryId;
-  final int? birthYear;
+  final int birthYear;
   final String? gender;
   final List<int> courseIds;
 
@@ -186,7 +186,7 @@ Map<String, dynamic> _studentRequestJson({
   required String firstName,
   required String lastName,
   required int? originCountryId,
-  required int? birthYear,
+  required int birthYear,
   required String? gender,
   required List<int> courseIds,
   bool? active,

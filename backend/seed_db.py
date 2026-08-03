@@ -37,6 +37,7 @@ from models import (
     StoryPhoto,
     Student,
 )
+from skill_survey_seed import seed_skill_surveys
 
 password_hash = PasswordHash.recommended()
 random = Random(20260714)
@@ -986,6 +987,7 @@ def main():
         )
 
 
+        seed_skill_surveys(db)
         db.commit()
     finally:
         db.close()

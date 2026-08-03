@@ -72,35 +72,43 @@ void main() {
       'first_name': 'Ada',
       'last_name': 'Lovelace',
       'origin_country_id': null,
-      'birth_year': null,
+      'birth_year': 2012,
       'gender': null,
       'active': true,
       'course_ids': [8],
     };
 
-    test('Student parses nullable demographics and derives full name', () {
+    test('Student parses demographics and derives full name', () {
       final student = Student.fromJson(json);
 
       expect(student.id, 7);
       expect(student.fullName, 'Ada Lovelace');
       expect(student.originCountryId, isNull);
-      expect(student.birthYear, isNull);
+      expect(student.birthYear, 2012);
       expect(student.gender, isNull);
       expect(student.active, isTrue);
       expect(student.courseIds, [8]);
+    });
+
+    test('Student rejects a null birth year', () {
+      expect(
+        () => Student.fromJson({...json, 'birth_year': null}),
+        throwsA(isA<TypeError>()),
+      );
     });
 
     test('admin create request includes active and nullable keys', () {
       const request = StudentCreateRequest(
         firstName: 'Ada',
         lastName: 'Lovelace',
+        birthYear: 2012,
       );
 
       expect(request.toJson(), {
         'first_name': 'Ada',
         'last_name': 'Lovelace',
         'origin_country_id': null,
-        'birth_year': null,
+        'birth_year': 2012,
         'gender': null,
         'active': true,
         'course_ids': <int>[],
@@ -114,7 +122,7 @@ void main() {
         'first_name': 'Ada',
         'last_name': 'Lovelace',
         'origin_country_id': null,
-        'birth_year': null,
+        'birth_year': 2012,
         'gender': null,
         'active': true,
         'course_ids': [8],
@@ -125,6 +133,7 @@ void main() {
       const request = MentorStudentCreateRequest(
         firstName: 'Ada',
         lastName: 'Lovelace',
+        birthYear: 2012,
         courseIds: [8],
       );
 
@@ -132,7 +141,7 @@ void main() {
         'first_name': 'Ada',
         'last_name': 'Lovelace',
         'origin_country_id': null,
-        'birth_year': null,
+        'birth_year': 2012,
         'gender': null,
         'course_ids': [8],
       });
@@ -148,7 +157,7 @@ void main() {
         'first_name': 'Ada',
         'last_name': 'Lovelace',
         'origin_country_id': null,
-        'birth_year': null,
+        'birth_year': 2012,
         'gender': null,
         'course_ids': [8],
       });

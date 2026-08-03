@@ -13,7 +13,10 @@ void main() {
     'reset prevents a late student-record result from restoring state',
     () async {
       final api = _DelayedStudentRecordApi();
-      final controller = StudentRecordController(studentRecordApi: api);
+      final controller = StudentRecordController(
+        studentRecordApi: api,
+        skillSurveyApi: _EmptySkillSurveyApi(),
+      );
 
       final load = controller.load(accessToken: 'token', studentId: 7);
       controller.reset();
@@ -74,6 +77,17 @@ class _DelayedStudentRecordApi extends SharedStudentRecordApi {
 
   void complete(StudentRecord record) {
     _result.complete(SharedStudentRecordResult.success(studentRecord: record));
+  }
+}
+
+class _EmptySkillSurveyApi extends SharedSkillSurveyApi {
+  @override
+  Future<SharedSkillSurveyResultsResult> fetchResults({
+    required String accessToken,
+    required int studentId,
+    int? courseId,
+  }) async {
+    return const SharedSkillSurveyResultsResult.success(results: []);
   }
 }
 

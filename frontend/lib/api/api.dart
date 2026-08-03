@@ -9,3 +9,4 @@ export 'session_log_api.dart';
 export 'session_photo_api.dart';
 export 'story_api.dart';
 export 'student_api.dart';
+export 'shared_skill_survey_api.dart';

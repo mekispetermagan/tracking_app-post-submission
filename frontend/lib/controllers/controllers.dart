@@ -30,3 +30,4 @@ export 'student_record_controller.dart';
 export 'track_students_controller.dart';
 export 'story_winner_archive_controller.dart';
 export 'curriculum_controller.dart';
+export 'skill_survey_controller.dart';

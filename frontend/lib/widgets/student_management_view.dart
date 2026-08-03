@@ -200,7 +200,7 @@ class StudentManagementView extends StatelessWidget {
         final selected = student.id == selectedStudentId;
 
         final details = <String>[
-          if (student.birthYear != null) student.birthYear.toString(),
+          student.birthYear.toString(),
           if (student.gender != null) _genderLabel(student.gender!),
           _courseLabel(student),
         ];

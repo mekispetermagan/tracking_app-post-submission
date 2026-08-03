@@ -41,6 +41,17 @@ class SessionLogMentorRole(str, Enum):
     SUPPORTING = "supporting"
 
 
+class SkillSurveyAgeGroup(str, Enum):
+    UNDER_12 = "under_12"
+    AGE_12_PLUS = "age_12_plus"
+
+
+class SkillSurveyFormStatus(str, Enum):
+    DRAFT = "draft"
+    PUBLISHED = "published"
+    RETIRED = "retired"
+
+
 class Country(Base):
     __tablename__ = "countries"
 
@@ -184,7 +195,7 @@ class Student(Base):
 
     origin_country: Mapped[Country | None] = relationship(back_populates="students")
 
-    birth_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    birth_year: Mapped[int] = mapped_column(Integer, nullable=False)
 
     gender: Mapped[str | None] = mapped_column(String(1), nullable=True)
 
@@ -288,6 +299,189 @@ class StudentCourse(Base):
         ForeignKey("courses.id"),
         primary_key=True,
     )
+
+    survey_age_group: Mapped[SkillSurveyAgeGroup | None] = mapped_column(
+        SqlEnum(
+            SkillSurveyAgeGroup,
+            name="skill_survey_age_groups",
+            native_enum=False,
+            create_constraint=True,
+            validate_strings=True,
+            values_callable=lambda enum: [item.value for item in enum],
+        ),
+        nullable=True,
+    )
+
+    assigned_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+
+
+class SkillSurvey(Base):
+    __tablename__ = "skill_surveys"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    forms: Mapped[list[SkillSurveyForm]] = relationship(
+        back_populates="survey",
+        cascade="all, delete-orphan",
+    )
+
+
+class SkillSurveyForm(Base):
+    __tablename__ = "skill_survey_forms"
+    __table_args__ = (
+        UniqueConstraint(
+            "survey_id",
+            "age_group",
+            "version",
+            name="uq_skill_survey_forms_survey_age_version",
+        ),
+        CheckConstraint("version >= 1", name="ck_skill_survey_forms_version"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    survey_id: Mapped[int] = mapped_column(
+        ForeignKey("skill_surveys.id"), nullable=False
+    )
+    age_group: Mapped[SkillSurveyAgeGroup] = mapped_column(
+        SqlEnum(
+            SkillSurveyAgeGroup,
+            name="skill_survey_form_age_groups",
+            native_enum=False,
+            create_constraint=True,
+            validate_strings=True,
+            values_callable=lambda enum: [item.value for item in enum],
+        ),
+        nullable=False,
+    )
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[SkillSurveyFormStatus] = mapped_column(
+        SqlEnum(
+            SkillSurveyFormStatus,
+            name="skill_survey_form_statuses",
+            native_enum=False,
+            create_constraint=True,
+            validate_strings=True,
+            values_callable=lambda enum: [item.value for item in enum],
+        ),
+        default=SkillSurveyFormStatus.DRAFT,
+        nullable=False,
+    )
+    published_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+    survey: Mapped[SkillSurvey] = relationship(back_populates="forms")
+    questions: Mapped[list[SkillSurveyQuestion]] = relationship(
+        back_populates="form",
+        cascade="all, delete-orphan",
+        order_by="SkillSurveyQuestion.position",
+    )
+    submissions: Mapped[list[SkillSurveySubmission]] = relationship(
+        back_populates="form"
+    )
+
+
+class SkillSurveyQuestion(Base):
+    __tablename__ = "skill_survey_questions"
+    __table_args__ = (
+        UniqueConstraint(
+            "form_id", "position", name="uq_skill_survey_questions_form_position"
+        ),
+        UniqueConstraint(
+            "form_id", "code", name="uq_skill_survey_questions_form_code"
+        ),
+        CheckConstraint("position >= 1", name="ck_skill_survey_questions_position"),
+        CheckConstraint(
+            "correct_option BETWEEN 1 AND 3",
+            name="ck_skill_survey_questions_correct_option",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    form_id: Mapped[int] = mapped_column(
+        ForeignKey("skill_survey_forms.id", ondelete="CASCADE"), nullable=False
+    )
+    position: Mapped[int] = mapped_column(Integer, nullable=False)
+    code: Mapped[str] = mapped_column(String(100), nullable=False)
+    prompt: Mapped[str] = mapped_column(Text, nullable=False)
+    illustration_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    correct_option: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    form: Mapped[SkillSurveyForm] = relationship(back_populates="questions")
+    answers: Mapped[list[SkillSurveyAnswer]] = relationship(back_populates="question")
+
+
+class SkillSurveySubmission(Base):
+    __tablename__ = "skill_survey_submissions"
+    __table_args__ = (
+        UniqueConstraint(
+            "student_id",
+            "course_id",
+            "form_id",
+            "survey_date",
+            name="uq_skill_survey_submissions_student_course_form_date",
+        ),
+        Index(
+            "ix_skill_survey_submissions_student_course_date",
+            "student_id",
+            "course_id",
+            "survey_date",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    student_id: Mapped[int] = mapped_column(ForeignKey("students.id"), nullable=False)
+    course_id: Mapped[int] = mapped_column(ForeignKey("courses.id"), nullable=False)
+    form_id: Mapped[int] = mapped_column(ForeignKey("skill_survey_forms.id"), nullable=False)
+    administered_by_account_id: Mapped[int] = mapped_column(
+        ForeignKey("accounts.id"), nullable=False
+    )
+    survey_date: Mapped[date] = mapped_column(Date, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
+    )
+
+    student: Mapped[Student] = relationship()
+    course: Mapped[Course] = relationship()
+    form: Mapped[SkillSurveyForm] = relationship(back_populates="submissions")
+    administered_by: Mapped[Account] = relationship()
+    answers: Mapped[list[SkillSurveyAnswer]] = relationship(
+        back_populates="submission",
+        cascade="all, delete-orphan",
+    )
+
+
+class SkillSurveyAnswer(Base):
+    __tablename__ = "skill_survey_answers"
+    __table_args__ = (
+        CheckConstraint(
+            "selected_option BETWEEN 1 AND 3",
+            name="ck_skill_survey_answers_selected_option",
+        ),
+    )
+
+    submission_id: Mapped[int] = mapped_column(
+        ForeignKey("skill_survey_submissions.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    question_id: Mapped[int] = mapped_column(
+        ForeignKey("skill_survey_questions.id"), primary_key=True
+    )
+    selected_option: Mapped[int] = mapped_column(Integer, nullable=False)
+    correct: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+    submission: Mapped[SkillSurveySubmission] = relationship(back_populates="answers")
+    question: Mapped[SkillSurveyQuestion] = relationship(back_populates="answers")
 
 
 class SessionLogStudent(Base):

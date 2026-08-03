@@ -1,10 +1,11 @@
-from typing import Literal
-from datetime import time
-from pydantic import BaseModel, Field
+from typing import Annotated, Literal
+from datetime import date, time
+from pydantic import BaseModel, Field, field_validator
 
 from schemas._validation import Phone, Pin
 
 Gender = Literal["M", "F", "N"]
+BirthYear = Annotated[int, Field(ge=1900, le=date.today().year)]
 
 
 class MentorOut(BaseModel):
@@ -43,7 +44,7 @@ class StudentOut(BaseModel):
     first_name: str
     last_name: str
     origin_country_id: int | None
-    birth_year: int | None
+    birth_year: BirthYear
     gender: Gender | None
     active: bool
     course_ids: list[int]
@@ -113,7 +114,7 @@ class StudentCreateRequest(BaseModel):
     first_name: str
     last_name: str
     origin_country_id: int | None = None
-    birth_year: int | None = None
+    birth_year: BirthYear
     gender: Gender | None = None
     active: bool = True
     course_ids: list[int] = Field(default_factory=list)
@@ -123,7 +124,14 @@ class StudentUpdateRequest(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     origin_country_id: int | None = None
-    birth_year: int | None = None
+    birth_year: BirthYear | None = None
     gender: Gender | None = None
     active: bool | None = None
     course_ids: list[int] | None = None
+
+    @field_validator("birth_year")
+    @classmethod
+    def reject_null_birth_year(cls, value: int | None) -> int:
+        if value is None:
+            raise ValueError("birth_year cannot be null")
+        return value

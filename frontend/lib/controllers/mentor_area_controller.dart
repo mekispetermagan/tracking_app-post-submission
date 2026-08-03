@@ -9,6 +9,7 @@ enum MentorScreen {
   viewSessionLogs,
   viewPhotos,
   trackStudents,
+  skillSurveys,
   stories,
   submitStory,
   storyWinnerArchive,
@@ -30,6 +31,7 @@ class MentorAreaController extends AreaController<MentorScreen> {
     ),
     AreaMenuItem(screen: MentorScreen.viewPhotos, label: 'View photos'),
     AreaMenuItem(screen: MentorScreen.trackStudents, label: 'Track students'),
+    AreaMenuItem(screen: MentorScreen.skillSurveys, label: 'Skill surveys'),
     AreaMenuItem(screen: MentorScreen.stories, label: 'Stories'),
     AreaMenuItem(screen: MentorScreen.curriculum, label: 'Curriculum'),
   ];

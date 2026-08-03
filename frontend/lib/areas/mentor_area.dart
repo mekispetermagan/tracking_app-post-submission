@@ -35,6 +35,7 @@ class _MentorAreaState extends State<MentorArea> {
   late final MentorViewSessionLogsController _viewSessionLogsController;
   late final SessionPhotoController _photoController;
   late final TrackStudentsController _trackStudentsController;
+  late final SkillSurveyController _skillSurveyController;
   late final MentorStoryController _storyController;
   late final StoryWinnerArchiveController _storyWinnerArchiveController;
   late final CurriculumController _curriculumController;
@@ -68,6 +69,7 @@ class _MentorAreaState extends State<MentorArea> {
       mentorApi: SharedCourseMentorsApi(client: client),
       studentRecordController: StudentRecordController(
         studentRecordApi: SharedStudentRecordApi(client: client),
+        skillSurveyApi: SharedSkillSurveyApi(client: client),
       ),
     );
     _photoController = SessionPhotoController(
@@ -78,6 +80,12 @@ class _MentorAreaState extends State<MentorArea> {
     _trackStudentsController = TrackStudentsController(
       studentApi: SharedStudentApi(client: client),
       studentRecordApi: SharedStudentRecordApi(client: client),
+      skillSurveyApi: SharedSkillSurveyApi(client: client),
+    );
+    _skillSurveyController = SkillSurveyController(
+      studentApi: SharedStudentApi(client: client),
+      courseApi: SharedCourseApi(client: client),
+      surveyApi: SharedSkillSurveyApi(client: client),
     );
     _storyController = MentorStoryController(
       storyApi: MentorStoryApi(client: client),
@@ -125,6 +133,7 @@ class _MentorAreaState extends State<MentorArea> {
     _viewSessionLogsController.dispose();
     _photoController.dispose();
     _trackStudentsController.dispose();
+    _skillSurveyController.dispose();
     _storyController.dispose();
     _storyWinnerArchiveController.dispose();
     _curriculumController.dispose();
@@ -146,6 +155,7 @@ class _MentorAreaState extends State<MentorArea> {
           _photoController,
           _trackStudentsController,
           _trackStudentsController.recordController,
+          _skillSurveyController,
           _viewSessionLogsController.studentRecordController,
           _storyController,
           _storyWinnerArchiveController,
@@ -184,6 +194,9 @@ class _MentorAreaState extends State<MentorArea> {
         _trackStudentsController.view == TrackStudentsView.record
             ? HelpTexts.mentorStudentRecord
             : HelpTexts.mentorTrackStudents,
+      MentorScreen.skillSurveys =>
+        'Select a student and course, then choose Math or Coding. '
+            'Each survey can be submitted once per student, course, and date.',
       MentorScreen.stories => HelpTexts.mentorStories,
       MentorScreen.submitStory => HelpTexts.mentorStoryForm,
       MentorScreen.storyWinnerArchive => HelpTexts.mentorStoryArchive,
@@ -232,6 +245,11 @@ class _MentorAreaState extends State<MentorArea> {
         if (_areaController.screen == MentorScreen.trackStudents &&
             _trackStudentsController.view == TrackStudentsView.record) {
           _trackStudentsController.closeRecord();
+          return;
+        }
+        if (_areaController.screen == MentorScreen.skillSurveys &&
+            _skillSurveyController.view != SkillSurveyView.selection) {
+          _skillSurveyController.back();
           return;
         }
 
@@ -293,6 +311,8 @@ class _MentorAreaState extends State<MentorArea> {
           MentorScreen.viewPhotos => _buildPhotoArea(),
 
           MentorScreen.trackStudents => _buildTrackStudentsArea(),
+
+          MentorScreen.skillSurveys => _buildSkillSurveyArea(),
 
           MentorScreen.stories => _buildStoriesArea(),
 
@@ -564,6 +584,9 @@ class _MentorAreaState extends State<MentorArea> {
       SessionLogAreaView.studentRecord => StudentRecordScreen(
         studentRecord:
             _viewSessionLogsController.studentRecordController.studentRecord,
+        skillSurveyResults: _viewSessionLogsController
+            .studentRecordController
+            .skillSurveyResults,
         isLoading: _viewSessionLogsController.studentRecordController.isLoading,
         message: _viewSessionLogsController.studentRecordController.message,
         clearMessage:
@@ -622,10 +645,65 @@ class _MentorAreaState extends State<MentorArea> {
 
       TrackStudentsView.record => StudentRecordScreen(
         studentRecord: _trackStudentsController.recordController.studentRecord,
+        skillSurveyResults:
+            _trackStudentsController.recordController.skillSurveyResults,
         isLoading: _trackStudentsController.recordController.isLoading,
         message: _trackStudentsController.recordController.message,
         clearMessage: _trackStudentsController.recordController.clearMessage,
         onBack: _trackStudentsController.closeRecord,
+      ),
+    };
+  }
+
+  Widget _buildSkillSurveyArea() {
+    final controller = _skillSurveyController;
+    return switch (controller.view) {
+      SkillSurveyView.selection => SkillSurveySelectionScreen(
+        students: controller.students,
+        courses: controller.availableCourses,
+        selectedStudentId: controller.selectedStudentId,
+        selectedCourseId: controller.selectedCourseId,
+        isLoading: controller.isLoading,
+        canContinue: controller.canContinue,
+        message: controller.message,
+        clearMessage: controller.clearMessage,
+        onSelectStudent: controller.selectStudent,
+        onSelectCourse: controller.selectCourse,
+        onContinue: () =>
+            controller.openSurveyMenu(accessToken: widget.accessToken),
+        onHome: _goHome,
+        onLogout: _logout,
+      ),
+      SkillSurveyView.menu => SkillSurveyMenuScreen(
+        student: controller.selectedStudent!,
+        course: controller.selectedCourse!,
+        forms: controller.forms,
+        completedToday: controller.completedToday,
+        latestResult: controller.latestResult,
+        onSelect: controller.startSurvey,
+        onBack: controller.back,
+        onLogout: _logout,
+      ),
+      SkillSurveyView.questions => SkillSurveyQuestionScreen(
+        form: controller.selectedForm!,
+        question: controller.currentQuestion!,
+        questionIndex: controller.questionIndex,
+        questionCount: controller.questionCount,
+        illustrationAsset: controller.illustrationAsset!,
+        isSubmitting: controller.isSubmitting,
+        message: controller.message,
+        clearMessage: controller.clearMessage,
+        onSelectOption: (questionId, option) =>
+            controller.answerCurrentQuestion(
+              accessToken: widget.accessToken,
+              questionId: questionId,
+              option: option,
+            ),
+        onBack: controller.back,
+      ),
+      SkillSurveyView.completed => SkillSurveyCompletedScreen(
+        result: controller.submittedResult!,
+        onDone: controller.back,
       ),
     };
   }
@@ -845,6 +923,10 @@ class _MentorAreaState extends State<MentorArea> {
       _trackStudentsController.openList(accessToken: widget.accessToken);
     }
 
+    if (screen == MentorScreen.skillSurveys) {
+      _skillSurveyController.initialize(accessToken: widget.accessToken);
+    }
+
     if (screen == MentorScreen.stories) {
       _openStories();
     }
@@ -872,6 +954,7 @@ class _MentorAreaState extends State<MentorArea> {
     _viewSessionLogsController.reset();
     _photoController.reset();
     _trackStudentsController.reset();
+    _skillSurveyController.reset();
     _storyController.reset();
     _storyWinnerArchiveController.reset();
     _curriculumController.reset();

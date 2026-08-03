@@ -538,6 +538,39 @@ def test_mentor_can_create_student_for_own_course(client, seeded):
     ]
 
 
+@pytest.mark.parametrize("birth_year", [None, "missing"])
+def test_student_creation_requires_birth_year(client, seeded, birth_year):
+    payload = {
+        "first_name": "Missing",
+        "last_name": "Birthyear",
+        "origin_country_id": seeded["uganda"].id,
+        "gender": "F",
+        "course_ids": [seeded["hillside"].id],
+    }
+    if birth_year != "missing":
+        payload["birth_year"] = birth_year
+
+    response = client.post(
+        "/api/shared/students",
+        json=payload,
+        headers=auth_header(seeded["admin_token"]),
+    )
+
+    assert response.status_code == 422
+
+
+def test_student_update_rejects_null_birth_year(client, seeded):
+    student = seeded["students"][0]
+
+    response = client.put(
+        f"/api/shared/students/{student.id}",
+        json={"birth_year": None},
+        headers=auth_header(seeded["admin_token"]),
+    )
+
+    assert response.status_code == 422
+
+
 def test_mentor_cannot_create_student_for_other_mentors_course(
     client,
     seeded,

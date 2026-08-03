@@ -43,6 +43,7 @@ from models import (
     StoryPhoto,
     Student,
 )
+from skill_survey_seed import seed_skill_surveys
 
 random = Random(20260721)
 password_hash = PasswordHash.recommended()
@@ -478,6 +479,7 @@ def main():
         db.add_all(
             [_visit(db, course, admin, visit_date, index) for index, (course, admin, visit_date) in enumerate(visits)]
         )
+        seed_skill_surveys(db)
         db.commit()
 
         print("Demo database created.")

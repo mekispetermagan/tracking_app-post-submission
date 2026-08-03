@@ -55,7 +55,7 @@ class _AdminStudentFormScreenState extends State<AdminStudentFormScreen> {
     );
     _lastNameController = TextEditingController(text: student?.lastName ?? '');
     _birthYearController = TextEditingController(
-      text: student?.birthYear?.toString() ?? '',
+      text: student?.birthYear.toString() ?? '',
     );
 
     _gender = student?.gender;
@@ -187,7 +187,7 @@ class _AdminStudentFormScreenState extends State<AdminStudentFormScreen> {
               firstName: _firstNameController.text.trim(),
               lastName: _lastNameController.text.trim(),
               originCountryId: SupportedCountries.defaultCountry.id,
-              birthYear: _parseOptionalInt(_birthYearController.text),
+              birthYear: int.parse(_birthYearController.text.trim()),
               gender: _gender,
               active: _active,
               courseIds: student.courseIds,
@@ -198,7 +198,7 @@ class _AdminStudentFormScreenState extends State<AdminStudentFormScreen> {
               firstName: _firstNameController.text.trim(),
               lastName: _lastNameController.text.trim(),
               originCountryId: SupportedCountries.defaultCountry.id,
-              birthYear: _parseOptionalInt(_birthYearController.text),
+              birthYear: int.parse(_birthYearController.text.trim()),
               gender: _gender,
               active: _active,
             ),
@@ -209,16 +209,6 @@ class _AdminStudentFormScreenState extends State<AdminStudentFormScreen> {
     }
   }
 
-  int? _parseOptionalInt(String value) {
-    final text = value.trim();
-
-    if (text.isEmpty) {
-      return null;
-    }
-
-    return int.parse(text);
-  }
-
   String? _required(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Required';
@@ -227,32 +217,14 @@ class _AdminStudentFormScreenState extends State<AdminStudentFormScreen> {
     return null;
   }
 
-  String? _optionalInt(String? value) {
-    final text = value?.trim() ?? '';
-
-    if (text.isEmpty) {
-      return null;
-    }
-
-    if (int.tryParse(text) == null) {
-      return 'Must be a number';
-    }
-
-    return null;
-  }
-
   String? _birthYearValidator(String? value) {
-    final error = _optionalInt(value);
-
-    if (error != null) {
-      return error;
-    }
-
     final text = value?.trim() ?? '';
 
     if (text.isEmpty) {
-      return null;
+      return 'Required';
     }
+
+    if (int.tryParse(text) == null) return 'Must be a number';
 
     final year = int.parse(text);
 

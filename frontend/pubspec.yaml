@@ -40,6 +40,10 @@ flutter:
     - assets/fonts/nunito/OFL.txt
     - assets/fonts/montserrat/OFL.txt
     - assets/images/
+    - assets/images/skill_survey/coding_1_en/
+    - assets/images/skill_survey/coding_2_en/
+    - assets/images/skill_survey/math_1_en/
+    - assets/images/skill_survey/math_2_en/
   fonts:
     - family: Nunito
       fonts:

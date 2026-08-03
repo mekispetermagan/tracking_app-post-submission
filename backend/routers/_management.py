@@ -1,7 +1,17 @@
+from datetime import date
+
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from models import Account, Country, Course, MentorProfile, Student
+from models import (
+    Account,
+    Country,
+    Course,
+    MentorProfile,
+    SkillSurveyAgeGroup,
+    Student,
+    StudentCourse,
+)
 from schemas.management import CourseOut, MentorOut, StudentOut
 
 
@@ -79,8 +89,40 @@ def student_visible_to_mentor(student: Student, mentor: MentorProfile) -> bool:
     return any(course.id in visible_course_ids for course in student.courses)
 
 
+def skill_survey_age_group(
+    birth_year: int,
+    reference_date: date,
+) -> SkillSurveyAgeGroup:
+    effective_birth_date = date(birth_year, 12, 31)
+    age = reference_date.year - effective_birth_date.year - (
+        (reference_date.month, reference_date.day)
+        < (effective_birth_date.month, effective_birth_date.day)
+    )
+    return (
+        SkillSurveyAgeGroup.UNDER_12
+        if age < 12
+        else SkillSurveyAgeGroup.AGE_12_PLUS
+    )
+
+
+def lock_student_course_age_groups(
+    db: Session,
+    student: Student,
+    reference_date: date,
+) -> None:
+    db.flush()
+    enrollments = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student.id,
+        StudentCourse.survey_age_group.is_(None),
+    )
+    age_group = skill_survey_age_group(student.birth_year, reference_date)
+    for enrollment in enrollments:
+        enrollment.survey_age_group = age_group
+
+
 def apply_student_courses_as_admin(db: Session, student: Student, course_ids: list[int]):
     student.courses = get_courses_by_ids(db, course_ids)
+    lock_student_course_age_groups(db, student, date.today())
 
 
 def apply_student_courses_as_mentor(db: Session, student: Student, mentor: MentorProfile, course_ids: list[int]):
@@ -97,6 +139,7 @@ def apply_student_courses_as_mentor(db: Session, student: Student, mentor: Mento
     ]
 
     student.courses = outside_courses + requested_courses
+    lock_student_course_age_groups(db, student, date.today())
 
 
 def mentor_to_out(mentor: MentorProfile) -> MentorOut:

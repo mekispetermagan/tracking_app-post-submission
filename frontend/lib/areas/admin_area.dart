@@ -34,6 +34,7 @@ class _AdminAreaState extends State<AdminArea> {
   late final AdminViewSessionLogsController _viewSessionLogsController;
   late final SessionPhotoController _photoController;
   late final TrackStudentsController _trackStudentsController;
+  late final SkillSurveyController _skillSurveyController;
   late final AdminStoryController _storyController;
   late final StoryWinnerArchiveController _storyWinnerArchiveController;
   late final AdminCourseVisitController _courseVisitController;
@@ -64,6 +65,7 @@ class _AdminAreaState extends State<AdminArea> {
       mentorApi: AdminMentorApi(client: client),
       studentRecordController: StudentRecordController(
         studentRecordApi: SharedStudentRecordApi(client: client),
+        skillSurveyApi: SharedSkillSurveyApi(client: client),
       ),
     );
     _photoController = SessionPhotoController(
@@ -74,6 +76,13 @@ class _AdminAreaState extends State<AdminArea> {
     _trackStudentsController = TrackStudentsController(
       studentApi: SharedStudentApi(client: client),
       studentRecordApi: SharedStudentRecordApi(client: client),
+      skillSurveyApi: SharedSkillSurveyApi(client: client),
+    );
+    _skillSurveyController = SkillSurveyController(
+      studentApi: SharedStudentApi(client: client),
+      courseApi: SharedCourseApi(client: client),
+      surveyApi: SharedSkillSurveyApi(client: client),
+      activeOnly: false,
     );
     _storyController = AdminStoryController(
       storyApi: AdminStoryApi(client: client),
@@ -114,6 +123,7 @@ class _AdminAreaState extends State<AdminArea> {
     _viewSessionLogsController.dispose();
     _photoController.dispose();
     _trackStudentsController.dispose();
+    _skillSurveyController.dispose();
     _storyController.dispose();
     _storyWinnerArchiveController.dispose();
     _courseVisitController.dispose();
@@ -134,6 +144,7 @@ class _AdminAreaState extends State<AdminArea> {
           _photoController,
           _trackStudentsController,
           _trackStudentsController.recordController,
+          _skillSurveyController,
           _viewSessionLogsController.studentRecordController,
           _storyController,
           _storyWinnerArchiveController,
@@ -197,6 +208,11 @@ class _AdminAreaState extends State<AdminArea> {
           _trackStudentsController.closeRecord();
           return;
         }
+        if (_areaController.screen == AdminScreen.skillSurveys &&
+            _skillSurveyController.view != SkillSurveyView.selection) {
+          _skillSurveyController.back();
+          return;
+        }
         if (_areaController.screen == AdminScreen.viewPhotos &&
             _coursePhotoView == CoursePhotoAreaView.courseGallery) {
           _closeCoursePhotos();
@@ -240,6 +256,8 @@ class _AdminAreaState extends State<AdminArea> {
         AdminScreen.viewPhotos => _buildPhotoArea(),
 
         AdminScreen.trackStudents => _buildTrackStudentsArea(),
+
+        AdminScreen.skillSurveys => _buildSkillSurveyArea(),
 
         AdminScreen.stories => _buildStoriesArea(),
 
@@ -484,6 +502,9 @@ class _AdminAreaState extends State<AdminArea> {
       SessionLogAreaView.studentRecord => StudentRecordScreen(
         studentRecord:
             _viewSessionLogsController.studentRecordController.studentRecord,
+        skillSurveyResults: _viewSessionLogsController
+            .studentRecordController
+            .skillSurveyResults,
         isLoading: _viewSessionLogsController.studentRecordController.isLoading,
         message: _viewSessionLogsController.studentRecordController.message,
         clearMessage:
@@ -516,10 +537,65 @@ class _AdminAreaState extends State<AdminArea> {
 
       TrackStudentsView.record => StudentRecordScreen(
         studentRecord: _trackStudentsController.recordController.studentRecord,
+        skillSurveyResults:
+            _trackStudentsController.recordController.skillSurveyResults,
         isLoading: _trackStudentsController.recordController.isLoading,
         message: _trackStudentsController.recordController.message,
         clearMessage: _trackStudentsController.recordController.clearMessage,
         onBack: _trackStudentsController.closeRecord,
+      ),
+    };
+  }
+
+  Widget _buildSkillSurveyArea() {
+    final controller = _skillSurveyController;
+    return switch (controller.view) {
+      SkillSurveyView.selection => SkillSurveySelectionScreen(
+        students: controller.students,
+        courses: controller.availableCourses,
+        selectedStudentId: controller.selectedStudentId,
+        selectedCourseId: controller.selectedCourseId,
+        isLoading: controller.isLoading,
+        canContinue: controller.canContinue,
+        message: controller.message,
+        clearMessage: controller.clearMessage,
+        onSelectStudent: controller.selectStudent,
+        onSelectCourse: controller.selectCourse,
+        onContinue: () =>
+            controller.openSurveyMenu(accessToken: widget.accessToken),
+        onHome: _returnToMenu,
+        onLogout: widget.onLogout,
+      ),
+      SkillSurveyView.menu => SkillSurveyMenuScreen(
+        student: controller.selectedStudent!,
+        course: controller.selectedCourse!,
+        forms: controller.forms,
+        completedToday: controller.completedToday,
+        latestResult: controller.latestResult,
+        onSelect: controller.startSurvey,
+        onBack: controller.back,
+        onLogout: widget.onLogout,
+      ),
+      SkillSurveyView.questions => SkillSurveyQuestionScreen(
+        form: controller.selectedForm!,
+        question: controller.currentQuestion!,
+        questionIndex: controller.questionIndex,
+        questionCount: controller.questionCount,
+        illustrationAsset: controller.illustrationAsset!,
+        isSubmitting: controller.isSubmitting,
+        message: controller.message,
+        clearMessage: controller.clearMessage,
+        onSelectOption: (questionId, option) =>
+            controller.answerCurrentQuestion(
+              accessToken: widget.accessToken,
+              questionId: questionId,
+              option: option,
+            ),
+        onBack: controller.back,
+      ),
+      SkillSurveyView.completed => SkillSurveyCompletedScreen(
+        result: controller.submittedResult!,
+        onDone: controller.back,
       ),
     };
   }
@@ -690,6 +766,10 @@ class _AdminAreaState extends State<AdminArea> {
 
     if (screen == AdminScreen.trackStudents) {
       await _trackStudentsController.openList(accessToken: widget.accessToken);
+    }
+
+    if (screen == AdminScreen.skillSurveys) {
+      await _skillSurveyController.initialize(accessToken: widget.accessToken);
     }
 
     if (screen == AdminScreen.stories) {
@@ -894,6 +974,7 @@ class _AdminAreaState extends State<AdminArea> {
     _areaController.reset();
     _photoController.reset();
     _trackStudentsController.reset();
+    _skillSurveyController.reset();
     _storyController.reset();
     _storyWinnerArchiveController.reset();
     _courseVisitController.reset();

@@ -13,6 +13,7 @@ from pwdlib import PasswordHash
 from config import settings
 from database import Base, SessionLocal, engine
 from models import Account, AdminProfile, Country, MentorProfile
+from skill_survey_seed import seed_skill_surveys
 
 
 password_hash = PasswordHash.recommended()
@@ -102,6 +103,7 @@ def main() -> None:
         for account in REVIEWER_ACCOUNTS:
             _add_account(db, uganda, *account, temporary=False)
 
+        seed_skill_surveys(db)
         db.commit()
 
     print("Created progress_prod.db with 5 accounts.")

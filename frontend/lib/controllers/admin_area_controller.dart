@@ -8,6 +8,7 @@ enum AdminScreen {
   viewSessionLogs,
   viewPhotos,
   trackStudents,
+  skillSurveys,
   stories,
   editStory,
   storyWinnerArchive,
@@ -32,6 +33,7 @@ class AdminAreaController extends AreaController<AdminScreen> {
     ),
     AreaMenuItem(screen: AdminScreen.viewPhotos, label: 'View photos'),
     AreaMenuItem(screen: AdminScreen.trackStudents, label: 'Track students'),
+    AreaMenuItem(screen: AdminScreen.skillSurveys, label: 'Skill surveys'),
     AreaMenuItem(screen: AdminScreen.stories, label: 'Stories'),
     AreaMenuItem(screen: AdminScreen.courseVisits, label: 'Course visits'),
   ];

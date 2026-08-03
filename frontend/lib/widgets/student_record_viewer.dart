@@ -4,8 +4,13 @@ import '../models/models.dart';
 
 class StudentRecordViewer extends StatelessWidget {
   final StudentRecord studentRecord;
+  final List<SkillSurveyResult> skillSurveyResults;
 
-  const StudentRecordViewer({required this.studentRecord, super.key});
+  const StudentRecordViewer({
+    required this.studentRecord,
+    required this.skillSurveyResults,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +38,25 @@ class StudentRecordViewer extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 24),
+        Text('Skill surveys', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        _Section(
+          child: skillSurveyResults.isEmpty
+              ? const Text('No survey results yet.')
+              : Column(
+                  children: [
+                    for (
+                      var index = skillSurveyResults.length - 1;
+                      index >= 0;
+                      index--
+                    ) ...[
+                      _SkillSurveyResultRow(result: skillSurveyResults[index]),
+                      if (index > 0) const Divider(),
+                    ],
+                  ],
+                ),
         ),
         const SizedBox(height: 24),
         Text('Project work', style: Theme.of(context).textTheme.titleLarge),
@@ -79,6 +103,31 @@ class StudentRecordViewer extends StatelessWidget {
     }
 
     return score.toStringAsFixed(1);
+  }
+}
+
+class _SkillSurveyResultRow extends StatelessWidget {
+  final SkillSurveyResult result;
+
+  const _SkillSurveyResultRow({required this.result});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(result.surveyName),
+      subtitle: Text(_formatDate(result.surveyDate)),
+      trailing: Text(
+        '${result.correctAnswers}/${result.totalQuestions}',
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    return '$day-$month-${date.year}';
   }
 }
 

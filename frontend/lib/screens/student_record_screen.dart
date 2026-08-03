@@ -7,6 +7,7 @@ import '../widgets/student_record_viewer.dart';
 
 class StudentRecordScreen extends StatelessWidget {
   final StudentRecord? studentRecord;
+  final List<SkillSurveyResult> skillSurveyResults;
   final bool isLoading;
   final String? message;
 
@@ -15,6 +16,7 @@ class StudentRecordScreen extends StatelessWidget {
 
   const StudentRecordScreen({
     required this.studentRecord,
+    required this.skillSurveyResults,
     required this.isLoading,
     required this.message,
     required this.clearMessage,
@@ -53,7 +55,12 @@ class StudentRecordScreen extends StatelessWidget {
 
     return ListView(
       padding: const EdgeInsets.all(24),
-      children: [StudentRecordViewer(studentRecord: record)],
+      children: [
+        StudentRecordViewer(
+          studentRecord: record,
+          skillSurveyResults: skillSurveyResults,
+        ),
+      ],
     );
   }
 }
