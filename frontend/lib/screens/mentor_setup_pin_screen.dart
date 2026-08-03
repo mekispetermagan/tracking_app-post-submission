@@ -80,7 +80,7 @@ class MentorSetupPinScreen extends StatelessWidget {
               defaultPinTheme: pinTheme,
             ),
             const SizedBox(height: 32),
-            LargeFilledButton(
+            LargeActionButton(
               onPressed: canSubmit && !isSubmitting ? onSubmit : null,
               child: Text(isSubmitting ? 'Saving...' : 'Save PIN'),
             ),

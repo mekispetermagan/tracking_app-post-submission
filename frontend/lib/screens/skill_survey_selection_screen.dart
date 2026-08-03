@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../widgets/app_bar.dart';
+import '../widgets/buttons.dart';
 
 class SkillSurveySelectionScreen extends StatelessWidget {
   const SkillSurveySelectionScreen({
@@ -107,10 +108,10 @@ class SkillSurveySelectionScreen extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: FilledButton.icon(
+          child: LargeActionButton(
             onPressed: canContinue ? onContinue : null,
             icon: const Icon(Icons.arrow_forward),
-            label: const Text('Choose survey'),
+            text: 'Choose survey',
           ),
         ),
       ),

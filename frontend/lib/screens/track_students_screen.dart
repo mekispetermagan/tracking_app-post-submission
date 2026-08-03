@@ -1,3 +1,4 @@
+import 'package:agu_frontend/widgets/buttons.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/app_bar.dart';
@@ -54,10 +55,10 @@ class TrackStudentsScreen extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: FilledButton.icon(
+          child: LargeActionButton(
             onPressed: canView ? onView : null,
             icon: const Icon(Icons.assignment_outlined),
-            label: const Text('View selected record'),
+            text: 'View selected record',
           ),
         ),
       ),

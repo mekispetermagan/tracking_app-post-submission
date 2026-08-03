@@ -154,11 +154,11 @@ class _AssignmentManagementViewState<TSubject, TItem, TFilter>
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: LargeFilledButton(
+          child: LargeActionButton(
             onPressed: widget.isLoading || widget.isSaving
                 ? null
                 : widget.onSave,
-            child: Text(widget.isSaving ? 'Saving...' : 'Save assignments'),
+            text: widget.isSaving ? 'Saving...' : 'Save assignments',
           ),
         ),
       ),

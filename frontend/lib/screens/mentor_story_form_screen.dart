@@ -112,7 +112,7 @@ class _MentorStoryFormScreenState extends State<MentorStoryFormScreen> {
               const SizedBox(height: 12),
               _buildPhotoSection(),
               const SizedBox(height: 32),
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed:
                     widget.isLoading ||
                         widget.isSelectingPhoto ||

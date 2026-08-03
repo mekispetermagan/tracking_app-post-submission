@@ -46,12 +46,12 @@ class StartScreen extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 48),
-                        LargeFilledButton(
+                        LargeActionButton(
                           onPressed: onMentorLogin,
                           text: 'Mentor login',
                         ),
                         const SizedBox(height: 24),
-                        LargeFilledButton(
+                        LargeActionButton(
                           onPressed: onAdminLogin,
                           text: 'Admin login',
                         ),

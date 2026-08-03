@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class LargeFilledButton extends StatelessWidget {
+class LargeActionButton extends StatelessWidget {
   final String? text;
   final Widget? child;
   final double fontSize;
   final VoidCallback? onPressed;
   final Icon? icon;
-  const LargeFilledButton({
+  const LargeActionButton({
     this.text,
     this.child,
     this.fontSize = 18,

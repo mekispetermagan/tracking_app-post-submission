@@ -33,7 +33,7 @@ class AdminMenuScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = items[index];
 
-            return LargeFilledButton(
+            return LargeActionButton(
               onPressed: () => onSelect(item.screen),
               text: item.label,
             );

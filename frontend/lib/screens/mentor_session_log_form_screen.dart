@@ -162,7 +162,7 @@ class _MentorSessionLogFormScreenState
                 isSaving: widget.isSaving,
               ),
               const SizedBox(height: 32),
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed: widget.isSaving || widget.isLoading ? null : _submit,
                 child: Text(
                   widget.isSaving ? 'Submitting...' : 'Submit session log',

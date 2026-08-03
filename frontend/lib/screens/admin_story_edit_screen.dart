@@ -99,7 +99,7 @@ class _AdminStoryEditScreenState extends State<AdminStoryEditScreen> {
                 },
               ),
               const SizedBox(height: 24),
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed: widget.isSaving ? null : _save,
                 child: Text(widget.isSaving ? 'Saving...' : 'Save changes'),
               ),

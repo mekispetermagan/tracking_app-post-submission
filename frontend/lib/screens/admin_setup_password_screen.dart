@@ -58,7 +58,7 @@ class AdminSetupPasswordScreen extends StatelessWidget {
             const SizedBox(height: 8),
             TextField(obscureText: true, onChanged: onConfirmPasswordChanged),
             const SizedBox(height: 32),
-            LargeFilledButton(
+            LargeActionButton(
               onPressed: canSubmit && !isSubmitting ? onSubmit : null,
               child: Text(isSubmitting ? 'Saving...' : 'Save password'),
             ),

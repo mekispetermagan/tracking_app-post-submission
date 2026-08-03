@@ -17,9 +17,9 @@ void main() {
         _app(
           Column(
             children: [
-              LargeFilledButton(text: 'Enabled', onPressed: () => presses++),
-              const LargeFilledButton(text: 'Disabled'),
-              LargeFilledButton(
+              LargeActionButton(text: 'Enabled', onPressed: () => presses++),
+              const LargeActionButton(text: 'Disabled'),
+              LargeActionButton(
                 icon: const Icon(Icons.add),
                 onPressed: () {},
                 child: const Text('Custom'),

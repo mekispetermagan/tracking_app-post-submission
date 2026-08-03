@@ -87,7 +87,7 @@ class SessionLogManagementView extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: LargeFilledButton(
+          child: LargeActionButton(
             onPressed: canView ? onView : null,
             icon: const Icon(Icons.visibility),
             text: 'View selected log',

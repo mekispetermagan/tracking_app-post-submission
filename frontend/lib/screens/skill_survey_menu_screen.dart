@@ -57,7 +57,7 @@ class SkillSurveyMenuScreen extends StatelessWidget {
                     : 'Latest: ${latest.correctAnswers}/${latest.totalQuestions}';
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: LargeFilledButton(
+                  child: LargeActionButton(
                     onPressed: completed ? null : () => onSelect(form),
                     child: Column(
                       children: [
@@ -65,7 +65,10 @@ class SkillSurveyMenuScreen extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           status,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
                         ),
                       ],
                     ),

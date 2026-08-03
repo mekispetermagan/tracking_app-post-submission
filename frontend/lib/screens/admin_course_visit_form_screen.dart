@@ -138,11 +138,9 @@ class _AdminCourseVisitFormScreenState
               ),
               const SizedBox(height: 32),
 
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed: widget.isSaving || widget.isLoading ? null : _submit,
-                child: Text(
-                  widget.isSaving ? 'Submitting...' : 'Submit report',
-                ),
+                text: widget.isSaving ? 'Submitting...' : 'Submit report',
               ),
             ],
           ),

@@ -100,7 +100,7 @@ class _MentorChangePinScreenState extends State<MentorChangePinScreen> {
               ),
               const SizedBox(height: 32),
 
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed: widget.isChangingPin ? null : _submit,
                 child: Text(widget.isChangingPin ? 'Saving...' : 'Change PIN'),
               ),

@@ -80,7 +80,7 @@ class _AdminMentorResetPinScreenState extends State<AdminMentorResetPinScreen> {
                 validator: _temporaryPinValidator,
               ),
               const SizedBox(height: 32),
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed: widget.isSaving ? null : _submit,
                 child: Text(widget.isSaving ? 'Saving...' : 'Reset PIN'),
               ),

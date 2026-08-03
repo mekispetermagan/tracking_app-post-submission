@@ -4,6 +4,7 @@ import 'app_bar.dart';
 
 import '../controllers/management_types.dart';
 import '../models/models.dart';
+import 'buttons.dart';
 
 class CourseManagementView extends StatelessWidget {
   final List<Course> courses;
@@ -112,11 +113,21 @@ class CourseManagementView extends StatelessWidget {
                 const SizedBox(width: 8),
               ],
               Expanded(
-                child: FilledButton.icon(
-                  onPressed: canEdit && !isLoading && !isSaving ? onEdit : null,
-                  icon: const Icon(Icons.edit),
-                  label: const Text('Edit'),
-                ),
+                child: onAdd == null
+                    ? LargeActionButton(
+                        onPressed: canEdit && !isLoading && !isSaving
+                            ? onEdit
+                            : null,
+                        icon: const Icon(Icons.edit),
+                        text: 'Edit',
+                      )
+                    : FilledButton.icon(
+                        onPressed: canEdit && !isLoading && !isSaving
+                            ? onEdit
+                            : null,
+                        icon: const Icon(Icons.edit),
+                        label: Text('Edit'),
+                      ),
               ),
               if (onAssignMentors != null) ...[
                 const SizedBox(width: 8),
@@ -126,7 +137,7 @@ class CourseManagementView extends StatelessWidget {
                         ? onAssignMentors
                         : null,
                     icon: const Icon(Icons.group),
-                    label: const Text('Mentors'),
+                    label: Text('Mentors'),
                   ),
                 ),
               ],

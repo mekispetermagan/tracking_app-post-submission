@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/app_bar.dart';
 
 import '../models/models.dart';
+import '../widgets/buttons.dart';
 import '../widgets/course_visit_report_viewer.dart';
 
 class AdminCourseVisitsScreen extends StatelessWidget {
@@ -74,10 +75,15 @@ class AdminCourseVisitsScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: isLoading ? null : onSubmitReport,
-        icon: const Icon(Icons.add),
-        label: const Text('Submit report'),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: LargeActionButton(
+            onPressed: isLoading ? null : onSubmitReport,
+            icon: const Icon(Icons.add),
+            text: 'Submit report',
+          ),
+        ),
       ),
     );
   }

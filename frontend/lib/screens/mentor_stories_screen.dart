@@ -1,3 +1,4 @@
+import 'package:agu_frontend/widgets/buttons.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/app_bar.dart';
@@ -86,12 +87,12 @@ class MentorStoriesScreen extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: FilledButton.icon(
+          child: LargeActionButton(
             onPressed: isCurrentMonth && !hasSubmittedThisMonth && !isLoading
                 ? onSubmitStory
                 : null,
             icon: const Icon(Icons.add),
-            label: Text(_submitButtonText()),
+            text: _submitButtonText(),
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/app_bar.dart';
+import '../widgets/buttons.dart';
 
 import '../models/models.dart';
 
@@ -86,10 +87,10 @@ class PhotoCourseSelectionScreen extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: FilledButton.icon(
+          child: LargeActionButton(
             onPressed: canView ? onView : null,
             icon: const Icon(Icons.photo_library_outlined),
-            label: const Text('View course photos'),
+            text: 'View course photos',
           ),
         ),
       ),

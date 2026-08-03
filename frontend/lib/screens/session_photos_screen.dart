@@ -6,6 +6,7 @@ import '../widgets/app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/models.dart';
+import '../widgets/buttons.dart';
 import '../widgets/session_photo_gallery.dart';
 
 class SessionPhotosScreen extends StatelessWidget {
@@ -101,17 +102,23 @@ class SessionPhotosScreen extends StatelessWidget {
           ? SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: FilledButton.icon(
+                child: LargeActionButton(
                   onPressed: canUpload ? () => onUpload() : null,
-                  icon: isUploading
-                      ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                  icon: isUploading ? null : const Icon(Icons.cloud_upload),
+                  text: isUploading ? null : 'Upload three photos',
+                  child: isUploading
+                      ? const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            SizedBox(width: 8),
+                            Text('Uploading...'),
+                          ],
                         )
-                      : const Icon(Icons.cloud_upload),
-                  label: Text(
-                    isUploading ? 'Uploading...' : 'Upload three photos',
-                  ),
+                      : null,
                 ),
               ),
             )

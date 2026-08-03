@@ -170,7 +170,7 @@ class _MentorStudentFormScreenState extends State<MentorStudentFormScreen> {
               const SizedBox(height: 8),
               _buildCourseList(),
               const SizedBox(height: 32),
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed: widget.isSaving ? null : _submit,
                 child: Text(
                   widget.isSaving

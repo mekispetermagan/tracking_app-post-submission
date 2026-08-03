@@ -56,7 +56,7 @@ class SessionLogDetailView extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: LargeFilledButton(
+          child: LargeActionButton(
             onPressed: onViewPhotos,
             icon: const Icon(Icons.photo_library_outlined),
             text: photoButtonLabel,

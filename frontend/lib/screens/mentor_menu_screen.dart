@@ -34,7 +34,7 @@ class MentorMenuScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = items[index];
 
-            return LargeFilledButton(
+            return LargeActionButton(
               text: item.label,
               onPressed: () => onSelect(item.screen),
             );

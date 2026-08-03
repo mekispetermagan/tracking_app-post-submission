@@ -176,7 +176,7 @@ class _AdminMentorFormScreenState extends State<AdminMentorFormScreen> {
               ],
 
               const SizedBox(height: 32),
-              LargeFilledButton(
+              LargeActionButton(
                 onPressed: widget.isSaving ? null : _submit,
                 child: Text(
                   widget.isSaving

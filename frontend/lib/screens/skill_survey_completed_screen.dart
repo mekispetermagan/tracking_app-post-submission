@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../widgets/app_bar.dart';
+import '../widgets/buttons.dart';
 
 class SkillSurveyCompletedScreen extends StatelessWidget {
   const SkillSurveyCompletedScreen({
@@ -34,10 +35,7 @@ class SkillSurveyCompletedScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 24),
-              FilledButton(
-                onPressed: onDone,
-                child: const Text('Back to surveys'),
-              ),
+              LargeActionButton(onPressed: onDone, text: 'Back to surveys'),
             ],
           ),
         ),

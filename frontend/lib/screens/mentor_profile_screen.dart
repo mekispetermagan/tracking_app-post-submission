@@ -184,7 +184,7 @@ class _MentorProfileScreenState extends State<MentorProfileScreen> {
 
           const SizedBox(height: 32),
 
-          LargeFilledButton(
+          LargeActionButton(
             onPressed: widget.isSaving ? null : _submit,
             child: Text(widget.isSaving ? 'Saving...' : 'Save changes'),
           ),

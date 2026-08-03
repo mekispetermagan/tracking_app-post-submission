@@ -83,7 +83,7 @@ class AdminLoginScreen extends StatelessWidget {
               onChanged: onPasswordChanged,
             ),
             const SizedBox(height: 32),
-            LargeFilledButton(
+            LargeActionButton(
               onPressed: canSubmit && !isSubmitting ? onSubmit : null,
               child: Text(isSubmitting ? 'Logging in...' : 'Login'),
             ),
