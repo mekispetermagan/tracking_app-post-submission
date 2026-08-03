@@ -8,7 +8,9 @@ import '../api/api.dart';
 import '../controllers/controllers.dart';
 import '../help/help.dart';
 import '../screens/screens.dart';
+import '../storage/storage.dart';
 import '../theme/app_theme.dart';
+import '../theme/theme_toggle_scope.dart';
 
 class MentorArea extends StatefulWidget {
   const MentorArea({
@@ -28,6 +30,10 @@ class MentorArea extends StatefulWidget {
 
 class _MentorAreaState extends State<MentorArea> {
   final _areaController = MentorAreaController();
+  final _themeController = AreaThemeController(
+    area: ThemePreferenceArea.mentor,
+    defaultDark: true,
+  );
   late final MentorCourseManagementController _courseController;
   late final MentorStudentManagementController _studentController;
   late final MentorProfileController _profileController;
@@ -45,6 +51,7 @@ class _MentorAreaState extends State<MentorArea> {
   @override
   void initState() {
     super.initState();
+    _themeController.initialize();
     final client = widget.apiClient;
     _courseController = MentorCourseManagementController(
       sharedCourseApi: SharedCourseApi(client: client),
@@ -125,6 +132,7 @@ class _MentorAreaState extends State<MentorArea> {
 
   @override
   void dispose() {
+    _themeController.dispose();
     _areaController.dispose();
     _courseController.dispose();
     _studentController.dispose();
@@ -142,8 +150,16 @@ class _MentorAreaState extends State<MentorArea> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: buildMentorTheme(),
+    return ListenableBuilder(
+      listenable: _themeController,
+      builder: (context, child) => Theme(
+        data: buildMentorTheme(brightness: _themeController.brightness),
+        child: ThemeToggleScope(
+          isDark: _themeController.isDark,
+          onToggle: _themeController.toggle,
+          child: child!,
+        ),
+      ),
       child: ListenableBuilder(
         listenable: Listenable.merge([
           _areaController,

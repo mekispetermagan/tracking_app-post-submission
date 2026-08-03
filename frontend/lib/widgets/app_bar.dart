@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../help/help_scope.dart';
+import '../theme/theme_toggle_scope.dart';
 import 'buttons.dart';
 import 'privacy_support.dart';
 
@@ -35,6 +36,12 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveHelpText = helpText ?? HelpScope.maybeTextOf(context);
+    final themeToggle = ThemeToggleScope.maybeOf(context);
+    final hasOverflowMenu =
+        showPrivacySupportAction ||
+        effectiveHelpText != null ||
+        themeToggle != null ||
+        onLogout != null;
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -59,26 +66,69 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       actions: [
         ...actions,
-        if (showPrivacySupportAction)
-          AppBarIconButton(
-            onPressed: () => showPrivacySupport(context),
-            icon: Icons.info_outline,
-            tooltip: 'Privacy & support',
-          ),
-        if (effectiveHelpText != null)
-          AppBarIconButton(
-            onPressed: () => _showHelp(context, effectiveHelpText),
-            icon: Icons.help_outline,
-            tooltip: 'Help',
-          ),
-        if (onLogout != null)
-          AppBarIconButton(
-            onPressed: onLogout!,
-            icon: Icons.logout,
-            tooltip: 'Log out',
+        if (hasOverflowMenu)
+          PopupMenuButton<_AppBarMenuAction>(
+            tooltip: 'More options',
+            icon: const Icon(Icons.more_vert),
+            onSelected: (action) => _handleMenuAction(
+              context,
+              action,
+              effectiveHelpText,
+              themeToggle,
+            ),
+            itemBuilder: (context) => [
+              if (themeToggle != null)
+                PopupMenuItem(
+                  value: _AppBarMenuAction.toggleTheme,
+                  child: _MenuItem(
+                    icon: themeToggle.isDark
+                        ? Icons.light_mode_outlined
+                        : Icons.dark_mode_outlined,
+                    label: themeToggle.isDark
+                        ? 'Switch to light mode'
+                        : 'Switch to dark mode',
+                  ),
+                ),
+              if (effectiveHelpText != null)
+                const PopupMenuItem(
+                  value: _AppBarMenuAction.help,
+                  child: _MenuItem(icon: Icons.help_outline, label: 'Help'),
+                ),
+              if (showPrivacySupportAction)
+                const PopupMenuItem(
+                  value: _AppBarMenuAction.privacySupport,
+                  child: _MenuItem(
+                    icon: Icons.info_outline,
+                    label: 'Privacy & support',
+                  ),
+                ),
+              if (onLogout != null)
+                const PopupMenuItem(
+                  value: _AppBarMenuAction.logout,
+                  child: _MenuItem(icon: Icons.logout, label: 'Log out'),
+                ),
+            ],
           ),
       ],
     );
+  }
+
+  void _handleMenuAction(
+    BuildContext context,
+    _AppBarMenuAction action,
+    String? effectiveHelpText,
+    ThemeToggleScope? themeToggle,
+  ) {
+    switch (action) {
+      case _AppBarMenuAction.toggleTheme:
+        themeToggle?.onToggle();
+      case _AppBarMenuAction.help:
+        if (effectiveHelpText != null) _showHelp(context, effectiveHelpText);
+      case _AppBarMenuAction.privacySupport:
+        showPrivacySupport(context);
+      case _AppBarMenuAction.logout:
+        onLogout?.call();
+    }
   }
 
   Future<void> _showHelp(BuildContext context, String text) {
@@ -94,6 +144,26 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+enum _AppBarMenuAction { toggleTheme, help, privacySupport, logout }
+
+class _MenuItem extends StatelessWidget {
+  const _MenuItem({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon),
+        const SizedBox(width: 12),
+        Flexible(child: Text(label)),
+      ],
     );
   }
 }

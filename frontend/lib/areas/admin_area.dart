@@ -8,7 +8,9 @@ import '../api/api.dart';
 import '../controllers/controllers.dart';
 import '../models/models.dart';
 import '../screens/screens.dart';
+import '../storage/storage.dart';
 import '../theme/app_theme.dart';
+import '../theme/theme_toggle_scope.dart';
 
 class AdminArea extends StatefulWidget {
   const AdminArea({
@@ -28,6 +30,10 @@ class AdminArea extends StatefulWidget {
 
 class _AdminAreaState extends State<AdminArea> {
   final _areaController = AdminAreaController();
+  final _themeController = AreaThemeController(
+    area: ThemePreferenceArea.admin,
+    defaultDark: false,
+  );
   late final AdminMentorManagementController _mentorManagementController;
   late final AdminCourseManagementController _courseManagementController;
   late final AdminStudentManagementController _studentManagementController;
@@ -45,6 +51,7 @@ class _AdminAreaState extends State<AdminArea> {
   @override
   void initState() {
     super.initState();
+    _themeController.initialize();
     final client = widget.apiClient;
     _mentorManagementController = AdminMentorManagementController(
       api: AdminMentorApi(client: client),
@@ -116,6 +123,7 @@ class _AdminAreaState extends State<AdminArea> {
 
   @override
   void dispose() {
+    _themeController.dispose();
     _areaController.dispose();
     _mentorManagementController.dispose();
     _courseManagementController.dispose();
@@ -132,8 +140,16 @@ class _AdminAreaState extends State<AdminArea> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: buildAdminTheme(),
+    return ListenableBuilder(
+      listenable: _themeController,
+      builder: (context, child) => Theme(
+        data: buildAdminTheme(brightness: _themeController.brightness),
+        child: ThemeToggleScope(
+          isDark: _themeController.isDark,
+          onToggle: _themeController.toggle,
+          child: child!,
+        ),
+      ),
       child: ListenableBuilder(
         listenable: Listenable.merge([
           _areaController,

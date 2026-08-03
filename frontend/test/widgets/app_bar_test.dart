@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:agu_frontend/help/help_scope.dart';
+import 'package:agu_frontend/theme/theme_toggle_scope.dart';
 import 'package:agu_frontend/widgets/app_bar.dart';
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
     );
   });
 
-  testWidgets('uses branded title and icon buttons for Home and Logout roles', (
+  testWidgets('uses branded title, Home, and an overflow menu for Logout', (
     tester,
   ) async {
     var homePressed = false;
@@ -35,8 +36,7 @@ void main() {
 
     expect(find.byIcon(Icons.home), findsOneWidget);
     expect(find.byTooltip('Home'), findsOneWidget);
-    expect(find.byIcon(Icons.logout), findsOneWidget);
-    expect(find.byTooltip('Log out'), findsOneWidget);
+    expect(find.byTooltip('More options'), findsOneWidget);
     final logo = tester.widget<Image>(find.byType(Image));
     expect(
       (logo.image as AssetImage).assetName,
@@ -45,7 +45,9 @@ void main() {
     expect(find.text('Area'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Home'));
-    await tester.tap(find.byTooltip('Log out'));
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Log out'));
 
     expect(homePressed, isTrue);
     expect(logoutPressed, isTrue);
@@ -65,7 +67,9 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byTooltip('Privacy & support'));
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Privacy & support'));
     await tester.pumpAndSettle();
 
     expect(find.byType(AlertDialog), findsOneWidget);
@@ -84,7 +88,7 @@ void main() {
 
     expect(find.byType(BackButton), findsOneWidget);
     expect(find.byIcon(Icons.home), findsNothing);
-    expect(find.byIcon(Icons.logout), findsNothing);
+    expect(find.byTooltip('More options'), findsNothing);
   });
 
   testWidgets('can show a disabled back button explicitly', (tester) async {
@@ -115,7 +119,9 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byTooltip('Help'));
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Help'));
     await tester.pumpAndSettle();
 
     expect(find.byType(AlertDialog), findsOneWidget);
@@ -137,7 +143,9 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byTooltip('Help'));
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Help'));
     await tester.pumpAndSettle();
     expect(find.text('Scoped guidance.'), findsOneWidget);
 
@@ -147,6 +155,28 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byTooltip('Help'), findsNothing);
+    expect(find.byTooltip('More options'), findsNothing);
+  });
+
+  testWidgets('offers the opposite brightness through the overflow menu', (
+    tester,
+  ) async {
+    var toggles = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ThemeToggleScope(
+          isDark: true,
+          onToggle: () async => toggles++,
+          child: const Scaffold(appBar: AppTopBar(title: Text('Area'))),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('More options'));
+    await tester.pumpAndSettle();
+    expect(find.text('Switch to light mode'), findsOneWidget);
+    await tester.tap(find.text('Switch to light mode'));
+    await tester.pumpAndSettle();
+    expect(toggles, 1);
   });
 }

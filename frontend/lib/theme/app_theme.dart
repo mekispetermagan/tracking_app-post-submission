@@ -11,25 +11,27 @@ ColorScheme buildStartColorScheme() {
   );
 }
 
-ColorScheme buildMentorColorScheme() {
+ColorScheme buildMentorColorScheme({Brightness brightness = Brightness.dark}) {
   return ColorScheme.fromSeed(
     seedColor: mentorSeedColor,
-    brightness: Brightness.dark,
+    brightness: brightness,
   );
 }
 
-ColorScheme buildAdminColorScheme() {
+ColorScheme buildAdminColorScheme({Brightness brightness = Brightness.light}) {
   return ColorScheme.fromSeed(
     seedColor: adminSeedColor,
-    brightness: Brightness.light,
+    brightness: brightness,
   );
 }
 
 ThemeData buildStartTheme() => buildAppTheme(buildStartColorScheme());
 
-ThemeData buildMentorTheme() => buildAppTheme(buildMentorColorScheme());
+ThemeData buildMentorTheme({Brightness brightness = Brightness.dark}) =>
+    buildAppTheme(buildMentorColorScheme(brightness: brightness));
 
-ThemeData buildAdminTheme() => buildAppTheme(buildAdminColorScheme());
+ThemeData buildAdminTheme({Brightness brightness = Brightness.light}) =>
+    buildAppTheme(buildAdminColorScheme(brightness: brightness));
 
 ThemeData buildAppTheme(ColorScheme colorScheme) {
   final baseTheme = ThemeData(
