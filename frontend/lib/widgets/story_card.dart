@@ -36,6 +36,9 @@ class StoryCard extends StatelessWidget {
                           '${story.submitterName} · '
                           '${story.courseName} · '
                           '${_formatDate(story.createdAt)}',
+                      downloadFileName:
+                          'story_${story.id}_'
+                          '${story.createdAt.toIso8601String().substring(0, 10)}.jpg',
                     ),
                   ],
                   showCounter: false,

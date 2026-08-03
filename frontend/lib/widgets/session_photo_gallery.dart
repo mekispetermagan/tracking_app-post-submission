@@ -191,6 +191,9 @@ PhotoViewerItem _viewerItemFor(SessionPhoto photo) {
   return PhotoViewerItem(
     imageUrl: photo.url,
     caption: '${_formatDate(photo.sessionDate)} · ${photo.mentorName}',
+    downloadFileName:
+        'session_${photo.sessionDate.toIso8601String().substring(0, 10)}_'
+        '${photo.photoNumber}.jpg',
   );
 }
 

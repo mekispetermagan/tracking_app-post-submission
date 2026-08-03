@@ -3,11 +3,26 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
+import '../storage/photo_download_service.dart';
+
 class PhotoViewerItem {
   final String imageUrl;
   final String caption;
+  final String? downloadFileName;
 
-  const PhotoViewerItem({required this.imageUrl, required this.caption});
+  const PhotoViewerItem({
+    required this.imageUrl,
+    required this.caption,
+    this.downloadFileName,
+  });
+
+  String get effectiveDownloadFileName {
+    if (downloadFileName case final fileName?) return fileName;
+    final segments = Uri.parse(imageUrl).pathSegments;
+    return segments.isEmpty || segments.last.isEmpty
+        ? 'photo.jpg'
+        : segments.last;
+  }
 }
 
 Future<void> showPhotoViewer({
@@ -17,6 +32,7 @@ Future<void> showPhotoViewer({
   bool showCounter = true,
   double controlIconSize = 36,
   TextStyle captionStyle = const TextStyle(color: Colors.white, fontSize: 16),
+  PhotoDownloadService? downloadService,
 }) {
   assert(items.isNotEmpty);
   assert(initialIndex >= 0 && initialIndex < items.length);
@@ -35,6 +51,7 @@ Future<void> showPhotoViewer({
             showCounter: showCounter,
             controlIconSize: controlIconSize,
             captionStyle: captionStyle,
+            downloadService: downloadService,
           ),
         ),
       );
@@ -48,6 +65,7 @@ class _PhotoViewer extends StatefulWidget {
   final bool showCounter;
   final double controlIconSize;
   final TextStyle captionStyle;
+  final PhotoDownloadService? downloadService;
 
   const _PhotoViewer({
     required this.items,
@@ -55,6 +73,7 @@ class _PhotoViewer extends StatefulWidget {
     required this.showCounter,
     required this.controlIconSize,
     required this.captionStyle,
+    required this.downloadService,
   });
 
   @override
@@ -65,6 +84,12 @@ class _PhotoViewerState extends State<_PhotoViewer> {
   late final PageController _pageController;
   late final FocusNode _focusNode;
   late int _currentIndex;
+  late final PhotoDownloadService _downloadService;
+  late final bool _ownsDownloadService;
+  Uint8List? _downloadBytes;
+  bool _isPreparingDownload = false;
+  bool _isSaving = false;
+  int _downloadRevision = 0;
 
   @override
   void initState() {
@@ -72,6 +97,9 @@ class _PhotoViewerState extends State<_PhotoViewer> {
     _currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
     _focusNode = FocusNode();
+    _downloadService = widget.downloadService ?? PhotoDownloadService();
+    _ownsDownloadService = widget.downloadService == null;
+    _prepareDownload(_currentIndex);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _focusNode.requestFocus();
@@ -82,6 +110,8 @@ class _PhotoViewerState extends State<_PhotoViewer> {
   void dispose() {
     _pageController.dispose();
     _focusNode.dispose();
+    _downloadRevision++;
+    if (_ownsDownloadService) _downloadService.dispose();
     super.dispose();
   }
 
@@ -109,6 +139,7 @@ class _PhotoViewerState extends State<_PhotoViewer> {
                   setState(() {
                     _currentIndex = index;
                   });
+                  _prepareDownload(index);
                 },
                 loadingBuilder: (context, loadingProgress) {
                   final expectedBytes = loadingProgress?.expectedTotalBytes;
@@ -181,11 +212,26 @@ class _PhotoViewerState extends State<_PhotoViewer> {
               top: 8,
               right: 8,
               child: SafeArea(
-                child: _ViewerButton(
-                  icon: Icons.close,
-                  iconSize: widget.controlIconSize,
-                  tooltip: 'Close',
-                  onPressed: () => Navigator.of(context).pop(),
+                child: Row(
+                  children: [
+                    _ViewerButton(
+                      icon: Icons.download,
+                      iconSize: widget.controlIconSize,
+                      tooltip: _isPreparingDownload
+                          ? 'Preparing download'
+                          : 'Download photo',
+                      onPressed: _downloadBytes == null || _isSaving
+                          ? null
+                          : _saveCurrentPhoto,
+                    ),
+                    const SizedBox(width: 8),
+                    _ViewerButton(
+                      icon: Icons.close,
+                      iconSize: widget.controlIconSize,
+                      tooltip: 'Close',
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -280,6 +326,61 @@ class _PhotoViewerState extends State<_PhotoViewer> {
     _pageController.nextPage(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
+    );
+  }
+
+  Future<void> _prepareDownload(int index) async {
+    final revision = ++_downloadRevision;
+    setState(() {
+      _downloadBytes = null;
+      _isPreparingDownload = true;
+    });
+    try {
+      final bytes = await _downloadService.fetch(widget.items[index].imageUrl);
+      if (!mounted || revision != _downloadRevision) return;
+      setState(() {
+        _downloadBytes = bytes;
+        _isPreparingDownload = false;
+      });
+    } catch (_) {
+      if (!mounted || revision != _downloadRevision) return;
+      setState(() {
+        _isPreparingDownload = false;
+      });
+    }
+  }
+
+  Future<void> _saveCurrentPhoto() async {
+    final bytes = _downloadBytes;
+    if (bytes == null || _isSaving) return;
+    setState(() => _isSaving = true);
+    try {
+      await _downloadService.save(
+        fileName: widget.items[_currentIndex].effectiveDownloadFileName,
+        bytes: bytes,
+      );
+    } on PhotoDownloadCancelled {
+      // Closing the system picker is not an error.
+    } on PhotoDownloadException {
+      if (mounted) await _showDownloadError();
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _showDownloadError() {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Download failed'),
+        content: const Text('The photo could not be saved. Please try again.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 }
