@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../config/supported_countries.dart';
 import '../widgets/app_bar.dart';
 
 import '../models/models.dart';
 import '../widgets/buttons.dart';
+import '../widgets/country_field.dart';
 
 class MentorStudentFormScreen extends StatefulWidget {
   final Student? student;
@@ -40,7 +42,6 @@ class _MentorStudentFormScreenState extends State<MentorStudentFormScreen> {
 
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
-  late final TextEditingController _countryIdController;
   late final TextEditingController _birthYearController;
 
   late String? _gender;
@@ -58,9 +59,6 @@ class _MentorStudentFormScreenState extends State<MentorStudentFormScreen> {
       text: student?.firstName ?? '',
     );
     _lastNameController = TextEditingController(text: student?.lastName ?? '');
-    _countryIdController = TextEditingController(
-      text: student?.originCountryId?.toString() ?? '',
-    );
     _birthYearController = TextEditingController(
       text: student?.birthYear?.toString() ?? '',
     );
@@ -82,7 +80,6 @@ class _MentorStudentFormScreenState extends State<MentorStudentFormScreen> {
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _countryIdController.dispose();
     _birthYearController.dispose();
     super.dispose();
   }
@@ -125,14 +122,9 @@ class _MentorStudentFormScreenState extends State<MentorStudentFormScreen> {
                 validator: _required,
               ),
               const SizedBox(height: 20),
-              const Text('Country ID'),
+              const Text('Country'),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _countryIdController,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.next,
-                validator: _optionalInt,
-              ),
+              const CountryField(),
               const SizedBox(height: 20),
               const Text('Birth year'),
               const SizedBox(height: 8),
@@ -270,7 +262,7 @@ class _MentorStudentFormScreenState extends State<MentorStudentFormScreen> {
         MentorStudentCreateRequest(
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
-          originCountryId: _parseOptionalInt(_countryIdController.text),
+          originCountryId: SupportedCountries.defaultCountry.id,
           birthYear: _parseOptionalInt(_birthYearController.text),
           gender: _gender,
           courseIds: courseIds,
@@ -285,7 +277,7 @@ class _MentorStudentFormScreenState extends State<MentorStudentFormScreen> {
       MentorStudentUpdateRequest(
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        originCountryId: _parseOptionalInt(_countryIdController.text),
+        originCountryId: SupportedCountries.defaultCountry.id,
         birthYear: _parseOptionalInt(_birthYearController.text),
         gender: _gender,
         courseIds: courseIds,

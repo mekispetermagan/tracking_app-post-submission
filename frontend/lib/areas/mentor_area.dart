@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../config/supported_countries.dart';
 import 'package:http/http.dart' as http;
 
 import '../api/api.dart';
@@ -94,11 +96,7 @@ class _MentorAreaState extends State<MentorArea> {
   String? get _profileCountryName {
     final countryId = _profileController.mentor?.countryId;
 
-    if (countryId == null) {
-      return null;
-    }
-
-    return 'ID $countryId';
+    return SupportedCountries.nameForId(countryId);
   }
 
   List<String> get _profileCourseNames {

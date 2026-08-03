@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../config/supported_countries.dart';
 import '../widgets/app_bar.dart';
 
 import '../models/models.dart';
 import '../widgets/buttons.dart';
+import '../widgets/country_field.dart';
 
 class MentorCourseFormScreen extends StatefulWidget {
   final Course course;
@@ -129,11 +131,13 @@ class _MentorCourseFormScreenState extends State<MentorCourseFormScreen> {
               onTap: widget.isSaving ? null : _selectStartTime,
             ),
             const SizedBox(height: 20),
-            const Text('Country ID'),
+            const Text('Country'),
             const SizedBox(height: 8),
-            TextFormField(
-              initialValue: widget.course.countryId.toString(),
-              readOnly: true,
+            CountryField(
+              country: SupportedCountries.values.firstWhere(
+                (country) => country.id == widget.course.countryId,
+                orElse: () => SupportedCountries.defaultCountry,
+              ),
             ),
             const SizedBox(height: 20),
             const Text('Status'),

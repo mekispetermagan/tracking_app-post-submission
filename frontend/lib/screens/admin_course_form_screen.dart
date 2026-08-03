@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../config/supported_countries.dart';
 import '../widgets/app_bar.dart';
 
 import '../models/models.dart';
 import '../widgets/buttons.dart';
+import '../widgets/country_field.dart';
 
 class AdminCourseFormScreen extends StatefulWidget {
   final Course? course;
@@ -37,7 +39,6 @@ class _AdminCourseFormScreenState extends State<AdminCourseFormScreen> {
 
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
-  late final TextEditingController _countryIdController;
 
   late int _dayOfWeek;
   late TimeOfDay _startTime;
@@ -63,9 +64,6 @@ class _AdminCourseFormScreenState extends State<AdminCourseFormScreen> {
     _descriptionController = TextEditingController(
       text: course?.description ?? '',
     );
-    _countryIdController = TextEditingController(
-      text: course?.countryId.toString() ?? '',
-    );
 
     _dayOfWeek = course?.dayOfWeek ?? 0;
     _startTime = _parseTime(course?.startTime ?? '09:00:00');
@@ -76,7 +74,6 @@ class _AdminCourseFormScreenState extends State<AdminCourseFormScreen> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _countryIdController.dispose();
     super.dispose();
   }
 
@@ -119,14 +116,9 @@ class _AdminCourseFormScreenState extends State<AdminCourseFormScreen> {
                 textInputAction: TextInputAction.newline,
               ),
               const SizedBox(height: 20),
-              const Text('Country ID'),
+              const Text('Country'),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _countryIdController,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                validator: _requiredInt,
-              ),
+              const CountryField(),
               const SizedBox(height: 20),
               const Text('Day'),
               const SizedBox(height: 8),
@@ -209,7 +201,7 @@ class _AdminCourseFormScreenState extends State<AdminCourseFormScreen> {
       return;
     }
 
-    final countryId = int.parse(_countryIdController.text.trim());
+    final countryId = SupportedCountries.defaultCountry.id;
     final startTime = _formatTime(_startTime);
     final course = widget.course;
 
@@ -259,20 +251,6 @@ class _AdminCourseFormScreenState extends State<AdminCourseFormScreen> {
   String? _required(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Required';
-    }
-
-    return null;
-  }
-
-  String? _requiredInt(String? value) {
-    final text = value?.trim() ?? '';
-
-    if (text.isEmpty) {
-      return 'Required';
-    }
-
-    if (int.tryParse(text) == null) {
-      return 'Must be a number';
     }
 
     return null;

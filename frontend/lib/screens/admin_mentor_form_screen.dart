@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../config/supported_countries.dart';
 import '../widgets/app_bar.dart';
 
 import '../models/models.dart';
 import '../validation/credential_validation.dart' show isValidPhone, isValidPin;
 import '../widgets/buttons.dart';
+import '../widgets/country_field.dart';
 
 class AdminMentorFormScreen extends StatefulWidget {
   final Mentor? mentor;
@@ -39,7 +41,6 @@ class _AdminMentorFormScreenState extends State<AdminMentorFormScreen> {
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _phoneController;
-  late final TextEditingController _countryIdController;
   late final TextEditingController _temporaryPinController;
 
   late String _preferredLanguage;
@@ -57,9 +58,6 @@ class _AdminMentorFormScreenState extends State<AdminMentorFormScreen> {
     _firstNameController = TextEditingController(text: mentor?.firstName ?? '');
     _lastNameController = TextEditingController(text: mentor?.lastName ?? '');
     _phoneController = TextEditingController(text: mentor?.phone ?? '');
-    _countryIdController = TextEditingController(
-      text: mentor?.countryId?.toString() ?? '',
-    );
     _temporaryPinController = TextEditingController();
 
     _preferredLanguage = _languageValues.contains(initialLanguage)
@@ -73,7 +71,6 @@ class _AdminMentorFormScreenState extends State<AdminMentorFormScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _phoneController.dispose();
-    _countryIdController.dispose();
     _temporaryPinController.dispose();
     super.dispose();
   }
@@ -128,14 +125,9 @@ class _AdminMentorFormScreenState extends State<AdminMentorFormScreen> {
               ),
               const SizedBox(height: 20),
 
-              const Text('Country ID'),
+              const Text('Country'),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _countryIdController,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.next,
-                validator: _optionalInt,
-              ),
+              const CountryField(),
               const SizedBox(height: 20),
 
               const Text('Preferred language'),
@@ -206,7 +198,7 @@ class _AdminMentorFormScreenState extends State<AdminMentorFormScreen> {
       return;
     }
 
-    final countryId = _parseCountryId();
+    final countryId = SupportedCountries.defaultCountry.id;
 
     final success = widget.isEdit
         ? await widget.onUpdate(
@@ -238,33 +230,9 @@ class _AdminMentorFormScreenState extends State<AdminMentorFormScreen> {
     }
   }
 
-  int? _parseCountryId() {
-    final text = _countryIdController.text.trim();
-
-    if (text.isEmpty) {
-      return null;
-    }
-
-    return int.parse(text);
-  }
-
   String? _required(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Required';
-    }
-
-    return null;
-  }
-
-  String? _optionalInt(String? value) {
-    final text = value?.trim() ?? '';
-
-    if (text.isEmpty) {
-      return null;
-    }
-
-    if (int.tryParse(text) == null) {
-      return 'Must be a number';
     }
 
     return null;
