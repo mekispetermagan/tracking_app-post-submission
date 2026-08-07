@@ -212,6 +212,33 @@ def test_submission_requires_every_question_and_prevents_duplicate(client, seede
     assert duplicate.status_code == 409
 
 
+@pytest.mark.parametrize(
+    ("day_offset", "expected_status"),
+    [
+        (-30, 201),
+        (0, 201),
+        (1, 201),
+        (2, 400),
+    ],
+)
+def test_submission_allows_global_date_boundary(
+    client, seeded, day_offset, expected_status
+):
+    form = get_forms(client, seeded)[0]
+    payload = submission_payload(seeded, form)
+    payload["survey_date"] = (
+        datetime.now(UTC).date() + timedelta(days=day_offset)
+    ).isoformat()
+
+    response = client.post(
+        "/api/shared/skill-surveys/submissions",
+        json=payload,
+        headers=auth_header(seeded["mentor_token"]),
+    )
+
+    assert response.status_code == expected_status
+
+
 def test_mentor_cannot_survey_student_outside_assigned_active_course(client, seeded):
     response = client.get(
         "/api/shared/skill-surveys/forms",

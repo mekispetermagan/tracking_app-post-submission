@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -113,8 +113,12 @@ def create_skill_survey_submission(
     data: SkillSurveySubmissionCreate,
     actor: Actor = Depends(get_current_actor),
 ):
-    if data.survey_date > date.today():
-        raise HTTPException(status_code=400, detail="Survey date cannot be in the future")
+    maximum_survey_date = datetime.now(UTC).date() + timedelta(days=1)
+    if data.survey_date > maximum_survey_date:
+        raise HTTPException(
+            status_code=400,
+            detail="Survey date is too far in the future",
+        )
     student, _, enrollment = _enrollment_for_actor(
         actor, data.student_id, data.course_id
     )
