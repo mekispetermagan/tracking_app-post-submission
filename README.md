@@ -1,5 +1,7 @@
 # Afterschool Geekery Uganda Project Manager
 
+> **Development has moved back to [tracking_app](https://github.com/mekispetermagan/tracking_app).** The full development history from this repository has been incorporated there. This repository is archived for reference; please use the original repository for the current code and future issues and pull requests.
+
 A project management and progress tracking app built for Afterschool Geekery Uganda, a coding and robotics program for children with little access to digital education.
 
 The app was developed in the communities where it will be used, by the person who runs the project. It is designed around the daily work of local mentors and administrators, while allowing the program manager to coordinate the project remotely.
